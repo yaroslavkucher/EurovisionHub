@@ -8,8 +8,12 @@ public partial class Event
     public int Id { get; set; }
 
     public string Name { get; set; } = null!;
-
-    public DateTime? Date { get; set; }
+    private DateTime? _date;
+    public DateTime? Date
+    {
+        get => _date;
+        set => _date = value.HasValue ? DateTime.SpecifyKind(value.Value, DateTimeKind.Utc) : null;
+    }
 
     public string Type { get; set; } = null!;
 

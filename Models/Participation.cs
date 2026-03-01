@@ -15,11 +15,11 @@ public partial class Participation
 
     public int? OrderNumber { get; set; }
 
-    public virtual Country Country { get; set; } = null!;
+    public virtual Country? Country { get; set; }
 
-    public virtual Event Event { get; set; } = null!;
+    public virtual Event? Event { get; set; }
 
-    public virtual Song Song { get; set; } = null!;
+    public virtual Song? Song { get; set; }
 
     public virtual ICollection<Vote> Votes { get; set; } = new List<Vote>();
 }
