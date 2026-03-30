@@ -1,13 +1,23 @@
 using EurovisionHub.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace EurovisionHub.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly EurovisionContext _context;
+
+        public HomeController(EurovisionContext context)
         {
+            _context = context;
+        }
+        public async Task<IActionResult> Index()
+        {
+            ViewBag.JuryPoints = await _context.Votes.Where(v => v.IsJury).SumAsync(v => v.Points);
+            ViewBag.TelePoints = await _context.Votes.Where(v => !v.IsJury).SumAsync(v => v.Points);
+
             return View();
         }
 

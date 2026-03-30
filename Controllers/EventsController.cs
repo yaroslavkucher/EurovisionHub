@@ -21,7 +21,8 @@ namespace EurovisionHub.Controllers
         // GET: Events
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Events.ToListAsync());
+            var eurovisionContext = _context.Events.Include(p => p.Type).Include(p => p.HostCountry);
+            return View(await eurovisionContext.ToListAsync());
         }
 
         // GET: Events/Details/5
@@ -33,6 +34,8 @@ namespace EurovisionHub.Controllers
             }
 
             var @event = await _context.Events
+                .Include(p => p.Type)
+                .Include(p => p.HostCountry)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (@event == null)
             {
@@ -45,6 +48,8 @@ namespace EurovisionHub.Controllers
         // GET: Events/Create
         public IActionResult Create()
         {
+            ViewData["Type"] = new SelectList(_context.EventTypes, "Id", "Name");
+            ViewData["HostCountry"] = new SelectList(_context.Countries, "Id", "Name");
             return View();
         }
 
@@ -53,14 +58,28 @@ namespace EurovisionHub.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Date,Type")] Event @event)
+        public async Task<IActionResult> Create([Bind("Id,Name,Date,TypeId,HostCountryId")] Event @event)
         {
             if (ModelState.IsValid)
             {
+                var existingEvent = await _context.Events.FirstOrDefaultAsync(e => e.Name.ToLower().Replace(" ", "") == @event.Name.ToLower().Replace(" ", "") && e.TypeId == @event.TypeId);
+
+                if (existingEvent != null)
+                {
+                    if(existingEvent.Name.ToLower().Replace(" ", "") == @event.Name.ToLower().Replace(" ", ""))
+                        ModelState.AddModelError("Name", "An event with the same Name already exists.");
+                    if (existingEvent.TypeId == @event.TypeId)
+                        ModelState.AddModelError("TypeId", "An event with the same Type already exists.");
+                    ViewData["Type"] = new SelectList(_context.EventTypes, "Id", "Name", @event.TypeId);
+                    ViewData["HostCountry"] = new SelectList(_context.Countries, "Id", "Name", @event.HostCountryId);
+                    return View(@event);
+                }
                 _context.Add(@event);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["Type"] = new SelectList(_context.EventTypes, "Id", "Name", @event.TypeId);
+            ViewData["HostCountry"] = new SelectList(_context.Countries, "Id", "Name", @event.HostCountryId);
             return View(@event);
         }
 
@@ -77,6 +96,8 @@ namespace EurovisionHub.Controllers
             {
                 return NotFound();
             }
+            ViewData["Type"] = new SelectList(_context.EventTypes, "Id", "Name", @event.TypeId);
+            ViewData["HostCountry"] = new SelectList(_context.Countries, "Id", "Name", @event.HostCountryId);
             return View(@event);
         }
 
@@ -85,7 +106,7 @@ namespace EurovisionHub.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Date,Type")] Event @event)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Date,TypeId,HostCountryId")] Event @event)
         {
             if (id != @event.Id)
             {
@@ -94,6 +115,7 @@ namespace EurovisionHub.Controllers
 
             if (ModelState.IsValid)
             {
+                // Додати перевірку на унікальність назви та типу для інших записів, окрім поточного
                 try
                 {
                     _context.Update(@event);
@@ -112,6 +134,8 @@ namespace EurovisionHub.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["Type"] = new SelectList(_context.EventTypes, "Id", "Name", @event.TypeId);
+            ViewData["HostCountry"] = new SelectList(_context.Countries, "Id", "Name", @event.HostCountryId);
             return View(@event);
         }
 
@@ -124,6 +148,8 @@ namespace EurovisionHub.Controllers
             }
 
             var @event = await _context.Events
+                .Include(e => e.Type)
+                .Include(p => p.HostCountry)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (@event == null)
             {

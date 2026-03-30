@@ -1,4 +1,4 @@
-﻿@model EurovisionHub.Models.Country
+﻿@model EurovisionHub.Models.EventType
 
 @{
     ViewData["Title"] = "Edit";
@@ -6,7 +6,7 @@
 
 <h1>Edit</h1>
 
-<h4>Country</h4>
+<h4>EventType</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -17,16 +17,6 @@
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
                 <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Code" class="control-label"></label>
-                <input asp-for="Code" class="form-control" />
-                <span asp-validation-for="Code" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="FlagUrl" class="control-label"></label>
-                <input asp-for="FlagUrl" class="form-control" />
-                <span asp-validation-for="FlagUrl" class="text-danger"></span>
             </div>
             <div class="mb-3">
                 <input type="submit" value="Save" class="btn-glass-submit" />

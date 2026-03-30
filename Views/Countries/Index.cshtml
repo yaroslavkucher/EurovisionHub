@@ -6,27 +6,38 @@
 
 <h1>Countries</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+<div class="mb-3">
+    <a asp-action="Create" class="btn-glass-add">+ Add New</a>
+</div>
+
+<div class="table-responsive">
+<table class="table glass-table">
     <thead>
         <tr>
+            <th width="110px">
+                Flag
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Code)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FlagUrl)
-            </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@{
+    var Model_sorted = Model.OrderBy(c => c.Name).ToList();
+}
+        @foreach (var item in Model_sorted)
+        {
         <tr>
+                <td>
+                    <img src="@(item.FlagUrl ?? "https://placehold.jp/50x30.png?text=No+Flag")"
+                         alt="@item.Name Flag"
+                         style="width:50px; height:30px; border-radius:4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" />
+                </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
@@ -34,14 +45,18 @@
                 @Html.DisplayFor(modelItem => item.Code)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.FlagUrl)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none">
+                        <img src="~/img/edit.png" alt="Edit" style="width:20px; height:20px;" />
+                    </a> 
+                    <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
+                        <img src="~/img/info.png" alt="Details" style="width:23px; height:23px;" />
+                </a> 
+                    <a style="color: red" asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2-icon lucide-trash-2"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+                </a>
             </td>
         </tr>
 }
     </tbody>
 </table>
+</div>

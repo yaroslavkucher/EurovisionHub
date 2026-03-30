@@ -24,6 +24,7 @@ public partial class EurovisionContext : DbContext
     public virtual DbSet<Song> Songs { get; set; }
 
     public virtual DbSet<Vote> Votes { get; set; }
+    public virtual DbSet<EventType> EventTypes { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -54,7 +55,27 @@ public partial class EurovisionContext : DbContext
                 .UseIdentityAlwaysColumn()
                 .HasColumnName("id");
             entity.Property(e => e.Name).HasMaxLength(255);
-            entity.Property(e => e.Type).HasMaxLength(255);
+            entity.HasOne(d => d.Type).WithMany(p => p.Events)
+                .HasForeignKey(d => d.TypeId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("EventType_fkey");
+            entity.HasOne(d => d.HostCountry).WithMany(p => p.HostedEvents)
+                .HasForeignKey(d => d.HostCountryId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("HostCountry_fkey");
+        });
+
+        modelBuilder.Entity<EventType>(entity =>
+        {
+            entity.ToTable("EventType");
+
+            entity.HasKey(e => e.Id).HasName("EventType_pkey");
+
+            entity.Property(e => e.Id)
+                .UseIdentityAlwaysColumn()
+                .HasColumnName("id");
+
+            entity.Property(e => e.Name).HasColumnType("character varying");
         });
 
         modelBuilder.Entity<Participation>(entity =>
@@ -115,6 +136,10 @@ public partial class EurovisionContext : DbContext
                 .HasForeignKey(d => d.ToParticipationId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("ToParticipation_fkey");
+            entity.HasOne(d => d.Event).WithMany(p => p.Votes)
+                .HasForeignKey(d => d.EventId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("Event_fkey");
         });
 
         OnModelCreatingPartial(modelBuilder);

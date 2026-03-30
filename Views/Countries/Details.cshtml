@@ -22,15 +22,40 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Code)
         </dd>
+
+        @section Scripts
+        {
+
+            <script>
+                function copyToClipboard(elementId) {
+                const text = document.getElementById(elementId).innerText;
+                navigator.clipboard.writeText(text).then(() => {
+                toastr.success('Link successfully copied');
+                }).catch(err => {
+                toastr.error('Link not copied');
+                });
+                }
+            </script>
+        }
+
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.FlagUrl)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FlagUrl)
+        <dd class="col-sm-10 d-flex align-items-center">
+            <div class="url-truncate-wrapper">
+                <span class="url-text" id="flagUrlText">@Model.FlagUrl</span>
+                <div class="url-blur-overlay"></div>
+            </div>
+            <button class="btn btn-link btn-sm text-decoration-none p-0 ms-2"
+                    onclick="copyToClipboard('flagUrlText')"
+                    title="Copy link">
+                <img src="~/img/copy.png" width="16" style="opacity: 0.7;" />
+                <span style="font-size: 0.85rem;">Copy</span>
+            </button>
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model?.Id"  class="btn-glass-edit">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

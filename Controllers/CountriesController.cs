@@ -57,8 +57,23 @@ namespace EurovisionHub.Controllers
         {
             if (ModelState.IsValid)
             {
+                var existing_item = await _context.Countries.FirstOrDefaultAsync(c => c.Name.ToLower() == country.Name.ToLower() || c.Code == country.Code.ToUpper());
+                if (existing_item != null)
+                {
+                    if (existing_item.Name.ToLower() == country.Name.ToLower())
+                    {
+                        ModelState.AddModelError("Name", "A country with the same name already exists.");
+                    }
+                    if (existing_item.Code == country.Code.ToUpper())
+                    {
+                        ModelState.AddModelError("Code", "A country with the same code already exists.");
+                    }
+                    return View(country);
+                }
+                country.Code = country.Code.ToUpper();
                 _context.Add(country);
                 await _context.SaveChangesAsync();
+                TempData["Success"] = $"Country {country.Name} successfully added to database!";
                 return RedirectToAction(nameof(Index));
             }
             return View(country);
@@ -94,6 +109,29 @@ namespace EurovisionHub.Controllers
 
             if (ModelState.IsValid)
             {
+                country.Code = country.Code?.ToUpper();
+
+                bool nameExists = await _context.Countries
+                    .AnyAsync(c => c.Name.ToLower() == country.Name.ToLower() && c.Id != id);
+
+                bool codeExists = await _context.Countries
+                    .AnyAsync(c => c.Code == country.Code && c.Id != id);
+
+                if (nameExists)
+                {
+                    ModelState.AddModelError("Name", "Country with this Name already exists.");
+                }
+
+                if (codeExists)
+                {
+                    ModelState.AddModelError("Code", "Country with this Code already exists.");
+                }
+
+                if (nameExists || codeExists)
+                {
+                    return View(country);
+                }
+
                 try
                 {
                     _context.Update(country);
@@ -143,8 +181,16 @@ namespace EurovisionHub.Controllers
             {
                 _context.Countries.Remove(country);
             }
-
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException)
+            {
+                TempData["Error"] = "Error: Unable to delete country. It may be referenced by other records.";
+                return View(country);
+            }
+            TempData["Success"] = $"Country {country.Name} successfully deleted!";
             return RedirectToAction(nameof(Index));
         }
 

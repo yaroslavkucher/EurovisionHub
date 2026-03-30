@@ -1,53 +1,95 @@
-﻿@model IEnumerable<EurovisionHub.Models.Vote>
+﻿@model EurovisionHub.Models.VotingViewModel
 
 @{
     ViewData["Title"] = "Votes";
 }
 
-<h1>Votes</h1>
+@if (Model.SelectedEventId.HasValue)
+{
+    <h1>@Model.SelectedEventName</h1>
+}
+else
+{
+    <h1>Votes</h1>
+}
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
+<p><a asp-action="Create" asp-route-selectedEventId="@Model.SelectedEventId" class="btn-glass-add">+ Add New</a></p>
+
+<div class="table-responsive">
+<table class="table glass-table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Points)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsJury)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.FromCountry)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ToParticipation)
-            </th>
+            <th>FromCountry</th>
+            <th>ToCountry</th>
+            <th>Jury/Televote</th>
+            <th>Points</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Points)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsJury)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FromCountry.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ToParticipation.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model.Votes)
+        {
+            <tr>
+                <td>@item.FromCountry?.Name</td>
+                <td>@item.ToParticipation?.Country.Name</td>
+                <td>
+                    @(item.IsJury ? "Jury" : "Televote")
+                </td>
+                <td>@item.Points</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none">
+                        <img src="~/img/edit.png" alt="Edit" style="width:20px; height:20px;" />
+                    </a> |
+                    <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
+                        <img src="~/img/info.png" alt="Details" style="width:23px; height:23px;" />
+                    </a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none">
+                        <img src="~/img/delete.png" alt="Delete" style="width:20px; height:20px;" />
+                    </a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+</div>
+
+<div class="modal fade" id="eventSelectionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Select an event</h5>
+            </div>
+            <div class="modal-body">
+                <form id="eventForm" method="get" asp-action="Index">
+                    <div class="mb-3">
+                        <label for="eventId">Events:</label>
+                        <select name="eventId" id="eventId" class="form-control" required oninvalid="this.setCustomValidity('Please, select event from the list!')"
+                                oninput="this.setCustomValidity('')">
+                            <option value="">-- Select an event --</option>
+                            @foreach (var ev in Model.Events.OrderByDescending(e => e.Date))
+                            {
+                                <option value="@ev.Id">@ev.Name - @ev.Date.Value.Year</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // 4. ЛОГІКА АВТО-ВІДКРИТТЯ: JS перевіряє URL
+        document.addEventListener("DOMContentLoaded", function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (!urlParams.has('eventId')) {
+                var myModal = new bootstrap.Modal(document.getElementById('eventSelectionModal'));
+                myModal.show();
+            }
+        });
+    </script>
+}

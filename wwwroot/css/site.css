@@ -17,15 +17,354 @@ html {
   min-height: 100%;
 }
 
+.input-validation-error {
+    background-color: #fff8f8;
+}
+
+.url-truncate-wrapper {
+    position: relative;
+    max-width: 300px;
+    white-space: nowrap;
+    overflow: hidden;
+    padding-right: 40px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.url-text {
+    /*font-size: 0.85rem;*/
+   /* color: #6c757d;*/ /* Колір "приглушеного" тексту */
+}
+
+.url-blur-overlay {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 80px;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));
+}
+
+.page-first-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.page-first-row> a{
+    border-radius: 8px;
+    background-color: antiquewhite;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: black;
+    transition: background-color 0.3s;
+}
+
+.page-first-row> a:hover{
+    background-color:  burlywood;
+}
+
+/* Фоновий градієнт для всього сайту, щоб підкреслити прозорість */
 body {
-  margin-bottom: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
+    color: white;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* Контейнер з ефектом скла */
+.glass-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    padding: 30px;
+    margin-top: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    min-height: 400px;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.glass-section {
+    flex: 1;
+    min-width: 300px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.divider {
+    width: 1px;
+    background: rgba(255, 255, 255, 0.2);
+    margin: 20px 0;
+}
+
+/* Стилі для зворотного відліку */
+#countdown {
+    display: flex;
+    gap: 15px;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.time-unit {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 10px;
+    border-radius: 10px;
+    min-width: 70px;
+}
+
+.time-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+header {
+    position: sticky !important;
+    top: 0;
+    z-index: 1000;
+}
+
+/* Оновлений хедер */
+
+.my-nav {
+    align-items: center;
+}
+
+.glass-navbar {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 23px 50px;
+}
+
+.modern-navbar {
+    display: flex !important;
+    gap: 20px;
+    list-style: none;
+    align-items: center;
+    margin: 0 !important;
+}
+
+    .modern-navbar li {
+        padding: 5px 10px;
+        color: rgba(255, 255, 255, 0.8) !important;
+        font-weight: 500;
+        font-size: 18px;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+    }
+
+        .modern-navbar li:hover {
+            color: #fff !important;
+            background: rgba(255, 255, 255, 0.1);
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+    .glass-navbar .navbar-brand {
+        color: #fff !important;
+        font-weight: 850;
+        font-size: 25px;
+        letter-spacing: 1px;
+    }
+
+/* Оновлений футер */
+.glass-footer {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+    padding: 15px 0;
+}
+
+    .glass-footer a {
+        color: rgba(255, 255, 255, 0.8);
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+
+        .glass-footer a:hover {
+            color: #fff;
+        }
+
+/* --- Скляні Таблиці --- */
+
+/* 1. Повне видалення квадратної рамки навколо контейнера */
+.table-responsive {
+    border-radius: 15px;
+    border: none !important;
+    box-shadow: none !important;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* 2. Оновлена скляна таблиця з захистом від стискання */
+.glass-table {
+    background: rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    border-radius: 15px !important;
+    color: white !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    border-collapse: separate !important; /* Важливо для заокруглення */
+    border-spacing: 0;
+    overflow: hidden; /* Обрізає кути внутрішніх елементів під радіус 15px */
+    min-width: 800px; /* ЗАХИСТ ВІД СТИСКАННЯ: таблиця не стане меншою за 800px */
+    width: 100%;
+}
+
+/* 3. Очищення стандартних стилів Bootstrap */
+table {
+    --bs-table-bg: transparent !important;
+    --bs-table-border-color: transparent !important; /* Прибирає внутрішні лінії, якщо вони заважають */
+    margin-bottom: 0 !important;
+    border: none !important;
+}
+
+.table thead th {
+    color: white;
+}
+
+.table tbody td {
+    color: white;
+}
+
+/* 4. Заокруглення для шапки (щоб фон не вилазив за межі) */
+.glass-table thead th:first-child {
+    border-top-left-radius: 15px;
+}
+
+.glass-table thead th:last-child {
+    border-top-right-radius: 15px;
+}
+
+/* Прибираємо ту саму зайву дужку в кінці файлу, якщо вона там лишилася */
+
+/* --- Оновлена Кнопка "Додати" --- */
+.btn-glass-add,
+.btn-glass-edit,
+.btn-glass-delete,
+.btn-glass-submit {
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    color: white !important;
+    padding: 10px 25px; /* Уніфікував розмір для всіх */
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    gap: 8px;
+    cursor: pointer;
+}
+
+/* 2. Кольори фону в спокійному стані */
+.btn-glass-add {
+    background: rgba(40, 167, 69, 0.3);
+}
+
+.btn-glass-edit {
+    background: rgba(255, 193, 7, 0.25);
+}
+
+.btn-glass-delete {
+    background: rgba(220, 53, 69, 0.25);
+}
+
+.btn-glass-submit {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+    /* 3. ОДНАКОВА АНІМАЦІЯ ПРИ НАВЕДЕННІ (як у Add) */
+    .btn-glass-add:hover,
+    .btn-glass-edit:hover,
+    .btn-glass-delete:hover,
+    .btn-glass-submit:hover {
+        transform: translateY(-2px); /* Підняття вгору */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Уніфікована тінь */
+        color: white !important;
+    }
+
+/* 4. Індивідуальна зміна яскравості при наведенні */
+.btn-glass-add:hover {
+    background: rgba(40, 167, 69, 0.5);
+}
+
+.btn-glass-edit:hover {
+    background: rgba(255, 193, 7, 0.45);
+}
+
+.btn-glass-delete:hover {
+    background: rgba(220, 53, 69, 0.45);
+}
+
+.btn-glass-submit:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+/* Поля вводу (Inputs) теж зробимо скляними */
+.form-control {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
+    backdrop-filter: blur(5px);
+}
+
+    .form-control:focus {
+        background: rgba(255, 255, 255, 0.15) !important;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2) !important;
+        border-color: rgba(255, 255, 255, 0.4) !important;
+    }
+
+    /* Виправлення тексту в плейсхолдерах */
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.5) !important;
+    }
+
+    main {
+        margin-bottom: 100px;
+    }
+
+.modal-content {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+}
+
+select.form-control option {
+    background-color: #656288 !important; /* Глибокий фіолетовий під колір градієнта */
+    color: white !important;
+    padding: 10px;
+}
+
+select.form-control {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='white' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 0.75rem center !important;
+    background-size: 16px 12px !important;
+    appearance: none; /* Прибираємо стандартну стрілку */
+    cursor: pointer;
+}
+
+.input-validation-error {
+    background-color: indianred !important;
+    border-color: red !important;
 }

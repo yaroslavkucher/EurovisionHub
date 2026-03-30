@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using EurovisionHub.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using EurovisionHub.Models;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.Metrics;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EurovisionHub.Controllers
 {
@@ -22,7 +23,7 @@ namespace EurovisionHub.Controllers
         public async Task<IActionResult> Index()
         {
             var eurovisionContext = _context.Participations.Include(p => p.Country).Include(p => p.Event).Include(p => p.Song);
-            return View(await eurovisionContext.ToListAsync());
+            return View(await eurovisionContext.OrderByDescending(c => c.Event.Date).ThenBy(c => c.OrderNumber).ToListAsync());
         }
 
         // GET: Participations/Details/5
@@ -49,9 +50,14 @@ namespace EurovisionHub.Controllers
         // GET: Participations/Create
         public IActionResult Create()
         {
-            ViewData["Country"] = new SelectList(_context.Countries, "Id", "Name");
-            ViewData["Event"] = new SelectList(_context.Events, "Id", "Name");
-            ViewData["Song"] = new SelectList(_context.Songs, "Id", "Title");
+            ViewData["Country"] = new SelectList(_context.Countries.OrderBy(c => c.Name), "Id", "Name");
+            ViewData["Event"] = new SelectList(_context.Events.OrderByDescending(e => e.Date), "Id", "Name");
+            ViewData["Song"] = new SelectList(_context.Songs.Select(x => new
+            {
+                x.Id,
+                Song = $"{x.Artist} - {x.Title}"
+
+            }), "Id", "Song");
             return View();
         }
 
@@ -64,17 +70,27 @@ namespace EurovisionHub.Controllers
         {
             if (ModelState.IsValid)
             {
-                var _participation = await _context.Participations.FirstOrDefaultAsync(p => p.CountryId == participation.CountryId && p.EventId == participation.EventId && p.SongId == participation.SongId);
+                var _participation = await _context.Participations.FirstOrDefaultAsync(p => (p.CountryId == participation.CountryId && p.EventId == participation.EventId) ||
+                                                                                            (p.EventId == participation.EventId && p.SongId == participation.SongId));
                 if (_participation == null) {
-                _context.Add(participation);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-                    }
-                 ModelState.AddModelError(string.Empty, "This participation already exists.");
+                    _context.Add(participation);
+                    await _context.SaveChangesAsync();
+                    var countryName = _context.Countries.FirstOrDefault(c => c.Id == participation.CountryId)?.Name;
+                    var eventName = _context.Events.FirstOrDefault(e => e.Id == participation.EventId)?.Name;
+                    var song = _context.Songs.FirstOrDefault(s => s.Id == participation.SongId);
+                    TempData["Success"] = $"Participation {countryName}-{eventName}-({song.Artist}-{song.Title}) successfully added to database!";
+                    return RedirectToAction(nameof(Index));
+                }
+                ModelState.AddModelError(string.Empty, "This participation already exists.");
             }
-            ViewData["Country"] = new SelectList(_context.Countries, "Id", "Name");
-            ViewData["Event"] = new SelectList(_context.Events, "Id", "Name");
-            ViewData["Song"] = new SelectList(_context.Songs, "Id", "Title");
+            ViewData["Country"] = new SelectList(_context.Countries.OrderBy(c => c.Name), "Id", "Name");
+            ViewData["Event"] = new SelectList(_context.Events.OrderByDescending(e => e.Date), "Id", "Name");
+            ViewData["Song"] = new SelectList(_context.Songs.Select(x => new
+            {
+                x.Id,
+                Song = $"{x.Artist} - {x.Title}"
+
+            }), "Id", "Song");
             return View(participation);
         }
 
@@ -91,9 +107,14 @@ namespace EurovisionHub.Controllers
             {
                 return NotFound();
             }
-            ViewData["Country"] = new SelectList(_context.Countries, "Id", "Name", participation.CountryId);
-            ViewData["Event"] = new SelectList(_context.Events, "Id", "Name", participation.EventId);
-            ViewData["Song"] = new SelectList(_context.Songs, "Id", "Title", participation.SongId);
+            ViewData["Country"] = new SelectList(_context.Countries.OrderBy(c => c.Name), "Id", "Name", participation.CountryId);
+            ViewData["Event"] = new SelectList(_context.Events.OrderByDescending(e => e.Date), "Id", "Name", participation.EventId);
+            ViewData["Song"] = new SelectList(_context.Songs.Select(x => new
+            {
+                x.Id,
+                Song = $"{x.Artist} - {x.Title}"
+
+            }), "Id", "Song");
             return View(participation);
         }
 
@@ -116,9 +137,14 @@ namespace EurovisionHub.Controllers
                     if (ParticipationExists(participation))
                     {
                         ModelState.AddModelError(string.Empty, "This participation already exists.");
-                        ViewData["Country"] = new SelectList(_context.Countries, "Id", "Name");
-                        ViewData["Event"] = new SelectList(_context.Events, "Id", "Name");
-                        ViewData["Song"] = new SelectList(_context.Songs, "Id", "Title");
+                        ViewData["Country"] = new SelectList(_context.Countries.OrderBy(c => c.Name), "Id", "Name");
+                        ViewData["Event"] = new SelectList(_context.Events.OrderByDescending(e => e.Date), "Id", "Name");
+                        ViewData["Song"] = new SelectList(_context.Songs.Select(x => new
+                        {
+                            x.Id,
+                            Song = $"{x.Artist} - {x.Title}"
+
+                        }), "Id", "Song");
                         return View(participation);
                     }
                     _context.Update(participation);
@@ -137,9 +163,14 @@ namespace EurovisionHub.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["Country"] = new SelectList(_context.Countries, "Id", "Name", participation.CountryId);
-            ViewData["Event"] = new SelectList(_context.Events, "Id", "Name", participation.EventId);
-            ViewData["Song"] = new SelectList(_context.Songs, "Id", "Title", participation.SongId);
+            ViewData["Country"] = new SelectList(_context.Countries.OrderBy(c => c.Name), "Id", "Name", participation.CountryId);
+            ViewData["Event"] = new SelectList(_context.Events.OrderByDescending(e => e.Date), "Id", "Name", participation.EventId);
+            ViewData["Song"] = new SelectList(_context.Songs.Select(x => new
+            {
+                x.Id,
+                Song = $"{x.Artist} - {x.Title}"
+
+            }), "Id", "Song");
             return View(participation);
         }
 

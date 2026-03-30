@@ -15,7 +15,11 @@ public partial class Event
         set => _date = value.HasValue ? DateTime.SpecifyKind(value.Value, DateTimeKind.Utc) : null;
     }
 
-    public string Type { get; set; } = null!;
+    public int TypeId { get; set; }
+    public int HostCountryId { get; set; }
 
+    public virtual EventType? Type { get; set; } = null!;
+    public virtual Country? HostCountry { get; set; } = null!;
+    public virtual ICollection<Vote> Votes { get; set; } = new List<Vote>();
     public virtual ICollection<Participation> Participations { get; set; } = new List<Participation>();
 }

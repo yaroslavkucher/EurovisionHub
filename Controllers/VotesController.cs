@@ -18,11 +18,30 @@ namespace EurovisionHub.Controllers
             _context = context;
         }
 
-        // GET: Votes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? eventId)
         {
-            var eurovisionContext = _context.Votes.Include(v => v.FromCountry).Include(v => v.ToParticipation);
-            return View(await eurovisionContext.ToListAsync());
+            var viewModel = new VotingViewModel
+            {
+                SelectedEventId = eventId,
+                Events = await _context.Events.ToListAsync(),
+                Votes = new List<Vote>()
+            };
+
+            if (eventId.HasValue)
+            {
+                var currentEvent = viewModel.Events.FirstOrDefault(e => e.Id == eventId.Value);
+                viewModel.SelectedEventName = currentEvent != null ? $"{currentEvent.Name} - {currentEvent.Date.Value.Year}" : "";
+
+                viewModel.Votes = await _context.Votes
+                    .Include(v => v.FromCountry)
+                    .Include(v => v.ToParticipation)
+                        .ThenInclude(tp => tp.Country)
+                    .Include(v => v.Event)
+                    .Where(v => v.ToParticipation.EventId == eventId.Value)
+                    .ToListAsync();
+            }
+
+            return View(viewModel);
         }
 
         // GET: Votes/Details/5
@@ -36,20 +55,43 @@ namespace EurovisionHub.Controllers
             var vote = await _context.Votes
                 .Include(v => v.FromCountry)
                 .Include(v => v.ToParticipation)
+                    .ThenInclude(tp => tp.Country)
+                .Include(v => v.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (vote == null)
             {
                 return NotFound();
             }
+            ViewBag.SelectedEventId = vote.EventId;
 
             return View(vote);
         }
 
         // GET: Votes/Create
-        public IActionResult Create()
+        public IActionResult Create(int? selectedEventId)
         {
-            ViewData["FromCountryId"] = new SelectList(_context.Countries, "Id", "Id");
-            ViewData["ToParticipationId"] = new SelectList(_context.Participations, "Id", "Id");
+            if (selectedEventId == null) return RedirectToAction("Index");
+
+            var participations = _context.Participations
+                .Where(p => p.EventId == selectedEventId)
+                .Include(p => p.Country)
+                .Include(p => p.Song)
+                .ToList();
+
+            var fromCountries = participations
+                .Select(p => p.Country)
+                .Distinct()
+                .OrderBy(c => c.Name);
+
+            var toParticipations = participations.Select(p => new {
+                p.Id,
+                DisplayName = $"{p.Country.Name} : {p.Song.Artist} - {p.Song.Title}"
+            }).OrderBy(x => x.DisplayName);
+
+            ViewData["FromCountry"] = new SelectList(fromCountries, "Id", "Name");
+            ViewData["ToCountry"] = new SelectList(toParticipations, "Id", "DisplayName");
+            ViewBag.SelectedEventId = selectedEventId;
+
             return View();
         }
 
@@ -58,16 +100,88 @@ namespace EurovisionHub.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FromCountryId,ToParticipationId,Points,IsJury")] Vote vote)
+        public async Task<IActionResult> Create([Bind("Id,FromCountryId,ToParticipationId,Points,IsJury,EventId")] Vote vote)
         {
+            if (!_context.Events.Any(e => e.Id == vote.EventId))
+            {
+                ModelState.AddModelError(nameof(vote.EventId), "Selected event does not exist.");
+            }
+
             if (ModelState.IsValid)
             {
+                var existingVote = _context.Votes
+                    .Include(c => c.FromCountry)
+                    .Include(c => c.ToParticipation)
+                        .ThenInclude(tp => tp.Country)
+                    .FirstOrDefault(v =>
+                    v.FromCountryId == vote.FromCountryId &&
+                    v.ToParticipationId == vote.ToParticipationId &&
+                    v.IsJury == vote.IsJury &&
+                    v.EventId == vote.EventId);
+                var IsDublicatePoints = _context.Votes.Any(v =>
+                    v.FromCountryId == vote.FromCountryId &&
+                    v.Points == vote.Points &&
+                    v.IsJury == vote.IsJury &&
+                    v.EventId == vote.EventId);
+                if (existingVote != null || IsDublicatePoints)
+                {
+                    if (existingVote != null)
+                    {
+                        ModelState.AddModelError("ToParticipationId", $"{existingVote.ToParticipation.Country.Name} already have points from {existingVote.FromCountry.Name}.");
+                        ModelState.AddModelError("FromCountryId", " ");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("FromCountryId", $"{_context.Countries.FirstOrDefault(c => c.Id == vote.FromCountryId).Name} already gives {vote.Points} points to another participant.");
+                        ModelState.AddModelError("Points", " ");
+                    }
+                    var _participations = _context.Participations
+                        .Where(p => p.EventId == vote.EventId)
+                        .Include(p => p.Country)
+                        .Include(p => p.Song)
+                        .ToList();
+
+                    var _fromCountries = _participations
+                        .Select(p => p.Country)
+                        .Distinct()
+                        .OrderBy(c => c.Name);
+
+                    var _toParticipations = _participations.Select(p => new {
+                        p.Id,
+                        DisplayName = $"{p.Country.Name} : {p.Song.Artist} - {p.Song.Title}"
+                    }).OrderBy(x => x.DisplayName);
+
+                    ViewData["FromCountry"] = new SelectList(_fromCountries, "Id", "Name");
+                    ViewData["ToCountry"] = new SelectList(_toParticipations, "Id", "DisplayName");
+                    ViewBag.SelectedEventId = vote.EventId;
+
+                    return View(vote);
+                }
+
                 _context.Add(vote);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { eventId = vote.EventId });
             }
-            ViewData["FromCountryId"] = new SelectList(_context.Countries, "Id", "Id", vote.FromCountryId);
-            ViewData["ToParticipationId"] = new SelectList(_context.Participations, "Id", "Id", vote.ToParticipationId);
+            var participations = _context.Participations
+                .Where(p => p.EventId == vote.EventId)
+                .Include(p => p.Country)
+                .Include(p => p.Song)
+                .ToList();
+
+            var fromCountries = participations
+                .Select(p => p.Country)
+                .Distinct()
+                .OrderBy(c => c.Name);
+
+            var toParticipations = participations.Select(p => new {
+                p.Id,
+                DisplayName = $"{p.Country.Name} : {p.Song.Artist} - {p.Song.Title}"
+            }).OrderBy(x => x.DisplayName);
+
+            ViewData["FromCountry"] = new SelectList(fromCountries, "Id", "Name");
+            ViewData["ToCountry"] = new SelectList(toParticipations, "Id", "DisplayName");
+            ViewBag.SelectedEventId = vote.EventId;
+
             return View(vote);
         }
 
@@ -84,8 +198,25 @@ namespace EurovisionHub.Controllers
             {
                 return NotFound();
             }
-            ViewData["FromCountryId"] = new SelectList(_context.Countries, "Id", "Id", vote.FromCountryId);
-            ViewData["ToParticipationId"] = new SelectList(_context.Participations, "Id", "Id", vote.ToParticipationId);
+            var participations = _context.Participations
+                .Where(p => p.EventId == vote.EventId)
+                .Include(p => p.Country)
+                .Include(p => p.Song)
+                .ToList();
+
+            var fromCountries = participations
+                .Select(p => p.Country)
+                .Distinct()
+                .OrderBy(c => c.Name);
+
+            var toParticipations = participations.Select(p => new {
+                p.Id,
+                DisplayName = $"{p.Country.Name} : {p.Song.Artist} - {p.Song.Title}"
+            }).OrderBy(x => x.DisplayName);
+
+            ViewData["FromCountry"] = new SelectList(fromCountries, "Id", "Name");
+            ViewData["ToCountry"] = new SelectList(toParticipations, "Id", "DisplayName");
+            ViewBag.SelectedEventId = vote.EventId;
             return View(vote);
         }
 
@@ -94,7 +225,7 @@ namespace EurovisionHub.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FromCountryId,ToParticipationId,Points,IsJury")] Vote vote)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FromCountryId,ToParticipationId,Points,IsJury,EventId")] Vote vote)
         {
             if (id != vote.Id)
             {
@@ -119,10 +250,28 @@ namespace EurovisionHub.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index), new { eventId = vote.EventId });
             }
-            ViewData["FromCountryId"] = new SelectList(_context.Countries, "Id", "Id", vote.FromCountryId);
-            ViewData["ToParticipationId"] = new SelectList(_context.Participations, "Id", "Id", vote.ToParticipationId);
+            var participations = _context.Participations
+                .Where(p => p.EventId == vote.EventId)
+                .Include(p => p.Country)
+                .Include(p => p.Song)
+                .ToList();
+
+            var fromCountries = participations
+                .Select(p => p.Country)
+                .Distinct()
+                .OrderBy(c => c.Name);
+
+            var toParticipations = participations.Select(p => new {
+                p.Id,
+                DisplayName = $"{p.Country.Name} : {p.Song.Artist} - {p.Song.Title}"
+            }).OrderBy(x => x.DisplayName);
+
+            ViewData["FromCountry"] = new SelectList(fromCountries, "Id", "Name");
+            ViewData["ToCountry"] = new SelectList(toParticipations, "Id", "DisplayName");
+            ViewBag.SelectedEventId = vote.EventId;
+
             return View(vote);
         }
 
@@ -137,11 +286,14 @@ namespace EurovisionHub.Controllers
             var vote = await _context.Votes
                 .Include(v => v.FromCountry)
                 .Include(v => v.ToParticipation)
+                    .ThenInclude(tp => tp.Country)
+                .Include(v => v.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (vote == null)
             {
                 return NotFound();
             }
+            ViewBag.SelectedEventId = vote.EventId;
 
             return View(vote);
         }
@@ -152,18 +304,35 @@ namespace EurovisionHub.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var vote = await _context.Votes.FindAsync(id);
-            if (vote != null)
+            if (vote == null)
             {
-                _context.Votes.Remove(vote);
+                return NotFound();
             }
 
+            _context.Votes.Remove(vote);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { eventId = vote.EventId });
         }
 
         private bool VoteExists(int id)
         {
             return _context.Votes.Any(e => e.Id == id);
         }
+        /*public IActionResult VotingPage(int? eventId)
+        {
+            var viewModel = new VotingViewModel();
+            viewModel.Events = _context.Events.ToList(); // Завантажуємо список для вибору
+
+            if (eventId.HasValue)
+            {
+                // Логіка, якщо захід вже обрано
+                viewModel.SelectedEventId = eventId.Value;
+                viewModel.Participations = _context.Participations
+                                          .Where(p => p.EventId == eventId.Value)
+                                          .ToList();
+            }
+
+            return View(viewModel);
+        }*/
     }
 }

@@ -7,22 +7,24 @@
 <h1>Participations</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn-glass-add">+ Add New</a>
 </p>
-<table class="table">
+
+<div class="table-responsive">
+<table class="table glass-table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.OrderNumber)
+                @Html.DisplayNameFor(model => model.Event)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Country)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Event)
+                @Html.DisplayNameFor(model => model.Song)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Song)
+                @Html.DisplayNameFor(model => model.OrderNumber)
             </th>
             <th></th>
         </tr>
@@ -31,24 +33,31 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.OrderNumber)
+                @Html.DisplayFor(modelItem => item.Event.Name)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Country.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Event.Name)
+                <p>@Html.DisplayFor(modelItem => item.Song.Artist) - @Html.DisplayFor(modelItem => item.Song.Title)</p>
             </td>
             <td>
-                    <p>@Html.DisplayFor(modelItem => item.Song.Artist) - @Html.DisplayFor(modelItem => item.Song.Title)</p>
-                    
+                @Html.DisplayFor(modelItem => item.OrderNumber)
             </td>
+            
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none">
+                        <img src="~/img/edit.png" alt="Edit" style="width:20px; height:20px;" />
+                    </a> |
+                    <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
+                        <img src="~/img/info.png" alt="Details" style="width:23px; height:23px;" />
+                </a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none">
+                        <img src="~/img/delete.png" alt="Delete" style="width:20px; height:20px;" />
+                </a>
             </td>
         </tr>
 }
     </tbody>
 </table>
+</div>

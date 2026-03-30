@@ -1,10 +1,10 @@
-﻿@model IEnumerable<EurovisionHub.Models.Song>
+﻿@model IEnumerable<EurovisionHub.Models.EventType>
 
 @{
-    ViewData["Title"] = "Songs";
+    ViewData["Title"] = "EventTypes";
 }
 
-<h1>Songs</h1>
+<h1>EventTypes</h1>
 
 <p>
     <a asp-action="Create" class="btn-glass-add">+ Add New</a>
@@ -15,13 +15,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Artist)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.VideoUrl)
+                @Html.DisplayNameFor(model => model.Name)
             </th>
             <th></th>
         </tr>
@@ -30,13 +24,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Artist)
-            </td>
-            <td>
-                    <a href="@item.VideoUrl">@Html.DisplayFor(modelItem => item.VideoUrl)</a>
+                @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
                     <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none">

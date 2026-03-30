@@ -1,0 +1,111 @@
+﻿@model IEnumerable<EurovisionHub.Models.VotingViewModel>
+
+@{
+    ViewData["Title"] = "Votes";
+}
+
+<h1>Votes</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">+ Add New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Filter
+            </th>
+            <th>
+                
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Points)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IsJury)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FromCountry)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ToParticipation)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Points)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsJury)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FromCountry.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ToParticipation.Id)
+            </td>
+            <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none">
+                        <img src="~/img/edit.png" alt="Edit" style="width:20px; height:20px;" />
+                    </a> |
+                    <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
+                        <img src="~/img/info.png" alt="Details" style="width:23px; height:23px;" />
+                    </a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none">
+                        <img src="~/img/delete.png" alt="Delete" style="width:20px; height:20px;" />
+                    </a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+
+<div class="modal fade" id="eventSelectionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Оберіть захід Євробачення</h5>
+            </div>
+            <div class="modal-body">
+                <form id="eventForm" method="get" asp-action="VotingPage">
+                    <div class="form-group">
+                        <label for="eventId">Доступні події:</label>
+                        <select name="eventId" id="eventId" class="form-control" required>
+                            <option value="">-- Оберіть захід --</option>
+                            @foreach (var ev in Model)
+                            {
+                                <option value="@ev.Id">@ev.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Підтвердити</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (!urlParams.has('eventId')) {
+                var myModal = new bootstrap.Modal(document.getElementById('eventSelectionModal'));
+                myModal.show();
+            }
+        });
+    </script>
+}
