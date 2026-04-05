@@ -33,11 +33,24 @@ namespace EurovisionHub.Controllers
             }
 
             var country = await _context.Countries
+                .Include(c => c.Participations)
+                    .ThenInclude(p => p.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (country == null)
             {
                 return NotFound();
             }
+
+            var participationsData = country.Participations
+                .Where(p => p.Place.HasValue)
+                .OrderBy(p => p.Event.Date.Value.Year)
+                .Select(p => new {
+                    Year = p.Event.Date.Value.Year,
+                    Place = p.Place.Value
+                })
+                .ToList();
+            ViewBag.Years = participationsData.Select(d => d.Year).ToList();
+            ViewBag.Places = participationsData.Select(d => d.Place).ToList();
 
             return View(country);
         }

@@ -59,3 +59,84 @@
     <a asp-action="Edit" asp-route-id="@Model?.Id"  class="btn-glass-edit">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+<hr />
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+        <h4 class="text-center">Історія виступів країни</h4>
+        <canvas id="countryHistoryChart" style="max-height: 400px;"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    // Отримуємо дані з ViewBag
+    const years = @Html.Raw(Json.Serialize(ViewBag.Years));
+    const places = @Html.Raw(Json.Serialize(ViewBag.Places));
+
+    const ctx = document.getElementById('countryHistoryChart').getContext('2d');
+    new Chart(ctx, {
+    type: 'line',
+    data: {
+    labels: years,
+    datasets: [{
+    label: 'Місце у фіналі',
+    data: places,
+    borderColor: '#00d1ff', // Яскравий блакитний для лінії
+    backgroundColor: 'rgba(0, 209, 255, 0.2)', // Напівпрозорий фон під лінією
+    borderWidth: 4,
+    fill: true,
+    tension: 0.3,
+    pointRadius: 6,
+    pointBackgroundColor: '#ff0050', // Яскравий рожевий для точок
+    pointBorderColor: 'white',
+    pointBorderWidth: 2
+    }]
+    },
+    options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+    legend: {
+    labels: {
+    color: 'white', // Білий колір для тексту легенди
+    font: { size: 14 }
+    }
+    }
+    },
+    scales: {
+    y: {
+    reverse: true, // 1-ше місце вгорі
+    beginAtZero: false,
+    grid: {
+    color: 'rgba(255, 255, 255, 0.1)' // Світла ледь помітна сітка
+    },
+    ticks: {
+    color: 'white', // Білі цифри на осі Y
+    stepSize: 1
+    },
+    title: {
+    display: true,
+    text: 'Місце',
+    color: 'white' // Білий заголовок осі
+    }
+    },
+    x: {
+    grid: {
+    display: false // Прибираємо вертикальні лінії сітки для чистоти
+    },
+    ticks: {
+    color: 'white' // Білі роки на осі X
+    },
+    title: {
+    display: true,
+    text: 'Рік',
+    color: 'white'
+    }
+    }
+    }
+    }
+    });
+    });
+</script>

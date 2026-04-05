@@ -40,3 +40,55 @@
     <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn-glass-edit">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+<hr />
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h4 class="text-center">Розподіл балів: Журі та Глядачі</h4>
+        <div style="height: 300px;">
+            <canvas id="pointsChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const juryPoints = @ViewBag.JuryPoints;
+    const televotePoints = @ViewBag.TelevotePoints;
+
+    const ctx = document.getElementById('pointsChart').getContext('2d');
+    new Chart(ctx, {
+    type: 'bar',
+    data: {
+    labels: ['Журі', 'Глядачі'],
+    datasets: [{
+    label: 'Кількість балів',
+    data: [juryPoints, televotePoints],
+    backgroundColor: ['#00d1ff', '#ff0050'],
+    borderRadius: 10
+    }]
+    },
+    options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+    legend: {
+    display: false // Приховуємо легенду, бо у нас і так підписані стовпчики
+    }
+    },
+    scales: {
+    y: {
+    beginAtZero: true,
+    ticks: { color: 'white' }, // Колір цифр на осі Y
+    grid: { color: 'rgba(255, 255, 255, 0.1)' } // Ледь помітна сітка
+    },
+    x: {
+    ticks: { color: 'white' }, // Колір написів "Журі" та "Глядачі"
+    grid: { display: false }
+    }
+    }
+    }
+    });
+    });
+</script>

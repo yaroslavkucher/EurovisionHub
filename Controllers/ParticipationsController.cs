@@ -44,6 +44,17 @@ namespace EurovisionHub.Controllers
                 return NotFound();
             }
 
+            var juryPoints = await _context.Votes
+                .Where(v => v.ToParticipationId == id && v.IsJury == true)
+                .SumAsync(v => v.Points);
+
+            var televotePoints = await _context.Votes
+                .Where(v => v.ToParticipationId == id && v.IsJury == false)
+                .SumAsync(v => v.Points);
+
+            ViewBag.JuryPoints = juryPoints;
+            ViewBag.TelevotePoints = televotePoints;
+
             return View(participation);
         }
 

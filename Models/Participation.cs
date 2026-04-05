@@ -14,6 +14,7 @@ public partial class Participation
     public int EventId { get; set; }
 
     public int? OrderNumber { get; set; }
+    public int? Place { get; set; }
 
     public virtual Country? Country { get; set; }
 
