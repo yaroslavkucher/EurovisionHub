@@ -77,7 +77,7 @@ namespace EurovisionHub.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,CountryId,SongId,EventId,OrderNumber")] Participation participation)
+        public async Task<IActionResult> Create([Bind("Id,CountryId,SongId,EventId,OrderNumber,Place")] Participation participation)
         {
             if (ModelState.IsValid)
             {
@@ -134,7 +134,7 @@ namespace EurovisionHub.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,CountryId,SongId,EventId,OrderNumber")] Participation participation)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,CountryId,SongId,EventId,OrderNumber,Place")] Participation participation)
         {
             if (id != participation.Id)
             {

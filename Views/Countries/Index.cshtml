@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<EurovisionHub.Models.Country>
 
 @{
-    ViewData["Title"] = "Countries";
+    ViewData["Title"] = "Countries - Rankings";
 }
 
 <h1>Countries</h1>
@@ -10,53 +10,125 @@
     <a asp-action="Create" class="btn-glass-add">+ Add New</a>
 </div>
 
-<div class="table-responsive">
-<table class="table glass-table">
-    <thead>
-        <tr>
-            <th width="110px">
-                Flag
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Code)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@{
-    var Model_sorted = Model.OrderBy(c => c.Name).ToList();
-}
-        @foreach (var item in Model_sorted)
+<div class="mb-3 glass-panel" style="padding: 15px; border-radius: 10px; background: rgba(255, 255, 255, 0.1);">
+    <h6 style="color: #fff; margin-bottom: 10px;">Порівняти результати країн:</h6>
+    <div class="d-flex flex-wrap gap-3" style="max-height: 120px; overflow-y: auto;">
+        @if (ViewBag.CountriesHistory != null)
         {
-        <tr>
-                <td>
-                    <img src="@(item.FlagUrl ?? "https://placehold.jp/50x30.png?text=No+Flag")"
-                         alt="@item.Name Flag"
-                         style="width:50px; height:30px; border-radius:4px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);" />
-                </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Code)
-            </td>
-            <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none">
-                        <img src="~/img/edit.png" alt="Edit" style="width:20px; height:20px;" />
-                    </a> 
-                    <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
-                        <img src="~/img/info.png" alt="Details" style="width:23px; height:23px;" />
-                </a> 
-                    <a style="color: red" asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2-icon lucide-trash-2"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
-                </a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+            foreach (var country in ViewBag.CountriesHistory)
+            {
+                <div class="form-check form-switch">
+                    <input class="form-check-input country-toggle" type="checkbox" value="@country.Name" id="toggle_@country.Name" checked>
+                    <label class="form-check-label" style="color: #fff;" for="toggle_@country.Name">@country.Name</label>
+                </div>
+            }
+        }
+    </div>
 </div>
+
+<div class="mb-5 glass-panel" style="padding: 20px; border-radius: 10px; background: rgba(255, 255, 255, 0.1);">
+    <canvas id="rankingsChart" width="400" height="150"></canvas>
+</div>
+
+<div class="table-responsive">
+    <table class="table glass-table">
+        <thead>
+            <tr>
+                <th width="110px">Flag</th>
+                <th>@Html.DisplayNameFor(model => model.Name)</th>
+                <th>@Html.DisplayNameFor(model => model.Code)</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        <img src="@(item.FlagUrl ?? "https://placehold.jp/50x30.png?text=No+Flag")"
+                             alt="@item.Name Flag"
+                             style="width:50px; height:30px; border-radius:4px;" />
+                    </td>
+                    <td>@item.Name</td>
+                    <td>@item.Code</td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id"><img src="~/img/edit.png" style="width:20px;" /></a>
+                        <a asp-action="Details" asp-route-id="@item.Id"><img src="~/img/info.png" style="width:23px;" /></a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" style="color:red">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="lucide lucide-trash-2"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2m-6 5v6m4-6v6" /></svg>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Отримуємо повну історію з ViewBag
+        const rawHistory = @Html.Raw(Json.Serialize(ViewBag.CountriesHistory));
+        
+        // Генеруємо випадковий колір для ліній
+        function getRandomColor() {
+        const r = Math.floor(Math.random() * 200) + 55;
+        const g = Math.floor(Math.random() * 200) + 55;
+        const b = Math.floor(Math.random() * 200) + 55;
+        return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        // Формуємо набори даних (datasets) для кожної країни
+        const allDatasets = rawHistory.map(c => {
+        const color = getRandomColor();
+        return {
+        label: c.name,
+        data: c.results.map(r => ({ x: r.year, y: r.place })),
+        borderColor: color,
+        backgroundColor: color,
+        tension: 0.3,
+        hidden: false // Початково видимі
+        };
+        });
+
+        const ctx = document.getElementById('rankingsChart').getContext('2d');
+        const rankingsChart = new Chart(ctx, {
+        type: 'line',
+        data: { datasets: allDatasets },
+        options: {
+        responsive: true,
+        scales: {
+        x: {
+        type: 'linear',
+        position: 'bottom',
+        ticks: { stepSize: 1, color: '#fff' },
+        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+        title: { display: true, text: 'Рік', color: '#fff' }
+        },
+        y: {
+        reverse: true, // 1-ше місце вгорі
+        beginAtZero: false,
+        ticks: { stepSize: 1, color: '#fff' },
+        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+        title: { display: true, text: 'Місце', color: '#fff' }
+        }
+        },
+        plugins: {
+        legend: { labels: { color: '#fff' } }
+        }
+        }
+        });
+
+        // Інтерактивність: перемикання видимості ліній
+        document.querySelectorAll('.country-toggle').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+        const countryName = this.value;
+        const dataset = rankingsChart.data.datasets.find(ds => ds.label === countryName);
+        if (dataset) {
+        dataset.hidden = !this.checked;
+        rankingsChart.update();
+        }
+        });
+        });
+    </script>
+}

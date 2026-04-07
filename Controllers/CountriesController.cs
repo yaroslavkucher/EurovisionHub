@@ -21,7 +21,31 @@ namespace EurovisionHub.Controllers
         // GET: Countries
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Countries.ToListAsync());
+            // Завантажуємо країни разом із результатами та датами подій
+            var countries = await _context.Countries
+                .Include(c => c.Participations)
+                    .ThenInclude(p => p.Event)
+                .ToListAsync();
+
+            // Готуємо дані для графіка: назва країни та список пар {рік, місце}
+            var countriesHistory = countries
+                .Select(c => new {
+                    Name = c.Name,
+                    Results = c.Participations
+                        .Where(p => p.Place.HasValue && p.Event != null && p.Event.Date.HasValue)
+                        .OrderBy(p => p.Event.Date.Value.Year)
+                        .Select(p => new {
+                            Year = p.Event.Date.Value.Year,
+                            Place = p.Place.Value
+                        })
+                        .ToList()
+                })
+                .Where(c => c.Results.Any()) // Беремо тільки ті країни, що мають результати
+                .ToList();
+
+            ViewBag.CountriesHistory = countriesHistory;
+
+            return View(countries.OrderBy(c => c.Name).ToList());
         }
 
         // GET: Countries/Details/5
