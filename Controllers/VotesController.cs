@@ -1,4 +1,7 @@
-﻿using System;
+﻿using System.IO;
+using System.Text;
+using ClosedXML.Excel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -334,5 +337,204 @@ namespace EurovisionHub.Controllers
 
             return View(viewModel);
         }*/
+        public async Task<IActionResult> Export(int? eventId)
+        {
+            var votesQuery = _context.Votes
+                .Include(v => v.Event)
+                .Include(v => v.FromCountry)
+                .Include(v => v.ToParticipation)
+                    .ThenInclude(p => p.Country)
+                .AsQueryable();
+
+            string fileNamePrefix = "AllVotes";
+
+            if (eventId.HasValue)
+            {
+                votesQuery = votesQuery.Where(v => v.EventId == eventId.Value);
+                var currentEvent = await _context.Events.FindAsync(eventId.Value);
+                if (currentEvent != null)
+                {
+                    // Прибираємо пробіли для гарної назви файлу
+                    fileNamePrefix = currentEvent.Name.Replace(" ", "_");
+                }
+            }
+
+            var votes = await votesQuery.ToListAsync();
+
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Votes");
+                var currentRow = 1;
+
+                // Заголовки (робимо їх жирними)
+                worksheet.Cell(currentRow, 1).Value = "Event";
+                worksheet.Cell(currentRow, 2).Value = "From Country";
+                worksheet.Cell(currentRow, 3).Value = "To Country";
+                worksheet.Cell(currentRow, 4).Value = "Points";
+                worksheet.Cell(currentRow, 5).Value = "Is Jury (Jury/Televote)";
+                worksheet.Range(1, 1, 1, 5).Style.Font.Bold = true;
+
+                // Дані
+                foreach (var vote in votes)
+                {
+                    currentRow++;
+                    worksheet.Cell(currentRow, 1).Value = vote.Event?.Name;
+                    worksheet.Cell(currentRow, 2).Value = vote.FromCountry?.Name;
+                    worksheet.Cell(currentRow, 3).Value = vote.ToParticipation?.Country?.Name;
+                    worksheet.Cell(currentRow, 4).Value = vote.Points;
+                    worksheet.Cell(currentRow, 5).Value = vote.IsJury ? "Jury" : "Televote";
+                }
+
+                // Авто-ширина колонок
+                worksheet.Columns().AdjustToContents();
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    var content = stream.ToArray();
+                    string fileName = $"{fileNamePrefix}_{DateTime.Now:dd_MM_yyyy_HH_mm_ss}.xlsx";
+                    return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+                }
+            }
+        }
+
+        public IActionResult DownloadTemplate()
+        {
+            using (var workbook = new XLWorkbook())
+            {
+                var worksheet = workbook.Worksheets.Add("Template");
+
+                worksheet.Cell(1, 1).Value = "Event Name";
+                worksheet.Cell(1, 2).Value = "From Country";
+                worksheet.Cell(1, 3).Value = "To Country";
+                worksheet.Cell(1, 4).Value = "Points";
+                worksheet.Cell(1, 5).Value = "Is Jury (True/False)";
+
+                worksheet.Range(1, 1, 1, 5).Style.Font.Bold = true;
+                worksheet.Columns().AdjustToContents();
+
+                using (var stream = new MemoryStream())
+                {
+                    workbook.SaveAs(stream);
+                    var content = stream.ToArray();
+                    return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ImportTemplate.xlsx");
+                }
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Import(IFormFile importFile)
+        {
+            if (importFile == null || importFile.Length == 0)
+            {
+                return RedirectToAction(nameof(Index)); // Можна додати сповіщення про пустий файл
+            }
+
+            var errorLog = new StringBuilder();
+            int addedCount = 0;
+
+            using (var stream = new MemoryStream())
+            {
+                await importFile.CopyToAsync(stream);
+                try
+                {
+                    using (var workbook = new XLWorkbook(stream))
+                    {
+                        var worksheet = workbook.Worksheet(1);
+                        var rows = worksheet.RangeUsed().RowsUsed().Skip(1); // Пропускаємо перший рядок (заголовки)
+
+                        foreach (var row in rows)
+                        {
+                            int rowNum = row.RowNumber();
+                            try
+                            {
+                                string eventName = row.Cell(1).GetString().Trim();
+                                string fromCountryName = row.Cell(2).GetString().Trim();
+                                string toCountryName = row.Cell(3).GetString().Trim();
+                                string pointsStr = row.Cell(4).GetString().Trim();
+                                string isJuryStr = row.Cell(5).GetString().Trim();
+
+                                // 1. Пошук Івенту
+                                var ev = await _context.Events.FirstOrDefaultAsync(e => e.Name == eventName);
+                                if (ev == null) { errorLog.AppendLine($"Row {rowNum}: Event '{eventName}' not found in database."); continue; }
+
+                                // 2. Пошук From Country
+                                var fromCountry = await _context.Countries.FirstOrDefaultAsync(c => c.Name == fromCountryName);
+                                if (fromCountry == null) { errorLog.AppendLine($"Row {rowNum}: 'From Country' '{fromCountryName}' not found."); continue; }
+
+                                // 3. Пошук To Country та перевірка її участі (Participation)
+                                var toCountry = await _context.Countries.FirstOrDefaultAsync(c => c.Name == toCountryName);
+                                if (toCountry == null) { errorLog.AppendLine($"Row {rowNum}: 'To Country' '{toCountryName}' not found."); continue; }
+
+                                if (fromCountryName == toCountryName) { errorLog.AppendLine($"Row {rowNum}: Country cannot give points to itself."); continue; }
+
+                                var participation = await _context.Participations.FirstOrDefaultAsync(p => p.EventId == ev.Id && p.CountryId == toCountry.Id);
+                                if (participation == null) { errorLog.AppendLine($"Row {rowNum}: '{toCountryName}' did not participate in '{eventName}'."); continue; }
+
+                                // 4. Валідація Points
+                                if (!int.TryParse(pointsStr, out int points) || points < 1 || points > 12 || points == 11 || points == 9)
+                                {
+                                    errorLog.AppendLine($"Row {rowNum}: Invalid points '{pointsStr}'. Must be 1-8 or 10 or 12."); continue;
+                                }
+
+                                // 5. Парсинг IsJury
+                                bool isJury = isJuryStr.Equals("True", StringComparison.OrdinalIgnoreCase) ||
+                                              isJuryStr.Equals("Jury", StringComparison.OrdinalIgnoreCase) ||
+                                              isJuryStr == "1";
+
+                                // 6. Перевірка на дублікати (як у твоєму Create)
+                                var existingVote = await _context.Votes.AnyAsync(v =>
+                                    v.FromCountryId == fromCountry.Id &&
+                                    v.ToParticipationId == participation.Id &&
+                                    v.IsJury == isJury &&
+                                    v.EventId == ev.Id);
+
+                                var isDuplicatePoints = await _context.Votes.AnyAsync(v =>
+                                    v.FromCountryId == fromCountry.Id &&
+                                    v.Points == points &&
+                                    v.IsJury == isJury &&
+                                    v.EventId == ev.Id);
+
+                                if (existingVote) { errorLog.AppendLine($"Row {rowNum}: Vote from {fromCountryName} to {toCountryName} already exists."); continue; }
+                                if (isDuplicatePoints) { errorLog.AppendLine($"Row {rowNum}: {fromCountryName} already gave {points} points in this category."); continue; }
+
+                                // Якщо все добре — додаємо
+                                var vote = new Vote
+                                {
+                                    EventId = ev.Id,
+                                    FromCountryId = fromCountry.Id,
+                                    ToParticipationId = participation.Id,
+                                    Points = points,
+                                    IsJury = isJury
+                                };
+                                _context.Votes.Add(vote);
+                                addedCount++;
+                            }
+                            catch (Exception ex)
+                            {
+                                errorLog.AppendLine($"Row {rowNum}: Unexpected error - {ex.Message}");
+                            }
+                        }
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    errorLog.AppendLine($"File reading error: {ex.Message}. Make sure it's a valid Excel format.");
+                }
+            }
+
+            // Якщо є помилки, повертаємо файл з логами
+            if (errorLog.Length > 0)
+            {
+                string logHeader = $"Import Results:\nSuccessfully added: {addedCount} votes.\n\nErrors encountered:\n-------------------\n";
+                byte[] fileBytes = Encoding.UTF8.GetBytes(logHeader + errorLog.ToString());
+                string logFileName = $"ImportErrors_Log_{DateTime.Now:dd_MM_yyyy_HH_mm_ss}.txt";
+                return File(fileBytes, "text/plain", logFileName);
+            }
+
+            // Якщо все ідеально, просто повертаємо на сторінку
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

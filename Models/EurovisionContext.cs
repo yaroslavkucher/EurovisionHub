@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace EurovisionHub.Models;
 
-public partial class EurovisionContext : DbContext
+public partial class EurovisionContext : IdentityDbContext<ApplicationUser>
 {
     public EurovisionContext()
     {
@@ -32,6 +32,8 @@ public partial class EurovisionContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Country>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Country_pkey");
