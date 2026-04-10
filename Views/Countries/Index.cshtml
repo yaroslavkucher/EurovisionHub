@@ -1,15 +1,34 @@
 ﻿@model IEnumerable<EurovisionHub.Models.Country>
 
 @{
-    ViewData["Title"] = "Countries - Rankings";
+    ViewData["Title"] = "Countries";
 }
 
-<h1>Countries</h1>
 
-<div class="mb-3">
-    <a asp-action="Create" class="btn-glass-add">+ Add New</a>
+
+<div class="page-first-row">
+    <div>
+        <h1>Countries</h1>
+        <a asp-action="Create" class="btn-glass-add">+ Add New</a>
+    </div>
 </div>
-
+@if (!Model.Any())
+{
+    @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+    {
+        <div class="alert alert-info">
+            There are no countries here. Add a new country!
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            There are no countries here. Updates coming soon.
+        </div>
+    }
+}
+else
+{
 <div class="mb-3 glass-panel" style="padding: 15px; border-radius: 10px; background: rgba(255, 255, 255, 0.1);">
     <h6 style="color: #fff; margin-bottom: 10px;">Порівняти результати країн:</h6>
     <div class="d-flex flex-wrap gap-3" style="max-height: 120px; overflow-y: auto;">
@@ -63,14 +82,13 @@
         </tbody>
     </table>
 </div>
+}
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Отримуємо повну історію з ViewBag
         const rawHistory = @Html.Raw(Json.Serialize(ViewBag.CountriesHistory));
         
-        // Генеруємо випадковий колір для ліній
         function getRandomColor() {
         const r = Math.floor(Math.random() * 200) + 55;
         const g = Math.floor(Math.random() * 200) + 55;
@@ -78,7 +96,6 @@
         return `rgb(${r}, ${g}, ${b})`;
         }
 
-        // Формуємо набори даних (datasets) для кожної країни
         const allDatasets = rawHistory.map(c => {
         const color = getRandomColor();
         return {
@@ -87,7 +104,7 @@
         borderColor: color,
         backgroundColor: color,
         tension: 0.3,
-        hidden: false // Початково видимі
+        hidden: false
         };
         });
 
@@ -106,7 +123,7 @@
         title: { display: true, text: 'Рік', color: '#fff' }
         },
         y: {
-        reverse: true, // 1-ше місце вгорі
+        reverse: true,
         beginAtZero: false,
         ticks: { stepSize: 1, color: '#fff' },
         grid: { color: 'rgba(255, 255, 255, 0.1)' },
@@ -119,7 +136,6 @@
         }
         });
 
-        // Інтерактивність: перемикання видимості ліній
         document.querySelectorAll('.country-toggle').forEach(checkbox => {
         checkbox.addEventListener('change', function() {
         const countryName = this.value;

@@ -24,11 +24,10 @@ public partial class EurovisionContext : IdentityDbContext<ApplicationUser>
     public virtual DbSet<Song> Songs { get; set; }
 
     public virtual DbSet<Vote> Votes { get; set; }
+
     public virtual DbSet<EventType> EventTypes { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseNpgsql("Host=localhost;Database=eurovision_db;Username=postgres;Password=YAROSLAV0401");
+    public virtual DbSet<RoleRequest> RoleRequests { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -143,6 +142,11 @@ public partial class EurovisionContext : IdentityDbContext<ApplicationUser>
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("Event_fkey");
         });
+
+        modelBuilder.Entity<RoleRequest>()
+        .HasOne(r => r.User)
+        .WithMany()
+        .HasForeignKey(r => r.UserId);
 
         OnModelCreatingPartial(modelBuilder);
     }

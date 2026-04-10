@@ -1,0 +1,91 @@
+﻿@model IEnumerable<EurovisionHub.Models.RoleRequest>
+
+@{
+    ViewData["Title"] = "Applications for the role of Administrator";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-person-badge"></i> Applications for rights enhancement</h2>
+        <span class="badge bg-primary">In line: @Model.Count()</span>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            There are currently no new applications pending.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table glass-table">
+                <thead>
+                    <tr>
+                        <th>User (Email)</th>
+                        <th style="width: 40%;">Motivation</th>
+                        <th>Submission date</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.User.Email</strong>
+                            </td>
+                            <td>
+                                <div class="" style="max-height: 60px; overflow-y: auto; font-size: 0.9rem;">
+                                    @item.Motivation
+                                </div>
+                            </td>
+                            <td>
+                                @item.CreatedAt.ToString("dd.MM.yyyy HH:mm")
+                            </td>
+                            <td class="text-end">
+                                <div class="btn-group" role="group">
+                                    <form asp-action="Approve" asp-route-requestId="@item.Id" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-outline-success btn-sm" onclick="return confirm('Grant Administrator rights to this user?')">
+                                            <i class="bi bi-check-lg"></i> Approve
+                                        </button>
+                                    </form>
+                                    
+                                    <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal-@item.Id">
+                                        <i class="bi bi-x-lg"></i> Reject
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        @foreach (var item in Model)
+        {
+            <div class="modal fade" id="rejectModal-@item.Id" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog text-start modal-dialog-centered">
+                    <div class="modal-content">
+                        <form asp-action="Reject" asp-route-requestId="@item.Id" method="post">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Reject application @item.User.Email</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Reason for rejection (will be visible to the user):</label>
+                                    <textarea name="adminComment" class="form-control glass-input" rows="8" required placeholder="For example: Not enough experience or fill out the profile in more detail..."></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-glass-submit" data-bs-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-glass-delete">Confirm rejection</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>

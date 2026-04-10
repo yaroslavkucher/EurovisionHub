@@ -13,12 +13,12 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="mb-3">
-                <label asp-for="FromCountry" class="control-label"></label>
+                <label asp-for="FromCountryId" class="control-label">FromCountry</label>
                 <select asp-for="FromCountryId" class ="form-control" asp-items="ViewBag.FromCountry"></select>
                 <span asp-validation-for="FromCountryId" class="text-danger"></span>
             </div>
             <div class="mb-3">
-                <label asp-for="ToParticipation" class="control-label">ToCountry</label>
+                <label asp-for="ToParticipationId" class="control-label">ToCountry</label>
                 <select asp-for="ToParticipationId" class ="form-control" asp-items="ViewBag.ToCountry"></select>
                 <span asp-validation-for="ToParticipationId" class="text-danger"></span>
             </div>
@@ -27,11 +27,18 @@
                 <input asp-for="Points" class="form-control" />
                 <span asp-validation-for="Points" class="text-danger"></span>
             </div>
-            <div class="mb-3 form-check">
+
+            <div class="mb-3">
+                <label asp-for="IsJury" class="control-label"></label>
+                <select asp-for="IsJury" class="form-control" asp-items="ViewBag.VotingType"></select>
+                <span asp-validation-for="IsJury" class="text-danger"></span>
+            </div>
+
+            <!--<div class="mb-3 form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="IsJury" /> @Html.DisplayNameFor(model => model.IsJury)
                 </label>
-            </div>
+            </div>-->
             <input type="hidden" name="EventId" value="@ViewBag.SelectedEventId" />
             <div class="mb-3">
                 <input type="submit" value="Create" class="btn-glass-submit" />

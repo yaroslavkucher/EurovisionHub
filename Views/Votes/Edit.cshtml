@@ -14,7 +14,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="mb-3">
-                <label asp-for="FromCountryId" class="control-label"></label>
+                <label asp-for="FromCountryId" class="control-label">FromCountry</label>
                 <select asp-for="FromCountryId" class="form-control" asp-items="ViewBag.FromCountry"></select>
                 <span asp-validation-for="FromCountryId" class="text-danger"></span>
             </div>

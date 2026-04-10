@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Eurovision Hub - Home";
+    ViewData["Title"] = "EurovisionHub";
 }
 
 <div class="text-center mb-4">
@@ -65,8 +65,8 @@
                     label: 'Розподіл балів',
                     data: [@ViewBag.JuryPoints, @ViewBag.TelePoints],
                     backgroundColor: [
-                        'rgba(101, 98, 136, 0.6)', // Твій колір #656288
-                        'rgba(255, 255, 255, 0.2)'  // Напівпрозорий білий
+                        'rgba(101, 98, 136, 0.6)',
+                        'rgba(255, 255, 255, 0.2)'
                     ],
                     borderColor: [
                         '#656288',
@@ -91,7 +91,7 @@
                         font: { size: 18, weight: 'bold' }
                     }
                 },
-                cutout: '70%' // Робить кільце тоншим і витонченішим
+                cutout: '70%'
             }
         });
     </script>

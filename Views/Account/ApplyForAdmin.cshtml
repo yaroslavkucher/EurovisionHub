@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Apply for Admin";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="glass-card">
+                <div class="glass-card-header">
+                    <h4>Apply for the role of Administrator</h4>
+                </div>
+                <div class="glass-card-body">
+                    <p class="text-muted">Describe why you want to join the EurovisionHub moderation team:</p>
+                    
+                    <form asp-action="ApplyForAdmin" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
+                        <div class="mb-3">
+                            <label for="motivation" class="form-label">Your motivation</label>
+                            <textarea id="motivation" name="motivation" class="form-control glass-input" rows="5" required
+                                      placeholder="For example: I want to add new songs and results from previous years..."></textarea>
+                            <span class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-glass-submit">Submit</button>
+                            <a asp-action="Index" asp-controller="Home" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

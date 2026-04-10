@@ -223,7 +223,7 @@ namespace EurovisionHub.Controllers
 
         private bool ParticipationExists(Participation participation)
         {
-            return _context.Participations.Any(p => p.CountryId == participation.CountryId && p.EventId == participation.EventId && p.SongId == participation.SongId);
+            return _context.Participations.Any(p => p.CountryId == participation.CountryId && p.EventId == participation.EventId && p.SongId == participation.SongId && p.Id != participation.Id);
         }
         private bool ParticipationExists(int id)
         {

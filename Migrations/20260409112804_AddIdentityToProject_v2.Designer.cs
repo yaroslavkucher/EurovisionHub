@@ -3,6 +3,7 @@ using System;
 using EurovisionHub.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EurovisionHub.Migrations
 {
     [DbContext(typeof(EurovisionContext))]
-    partial class EurovisionContextModelSnapshot : ModelSnapshot
+    [Migration("20260409112804_AddIdentityToProject_v2")]
+    partial class AddIdentityToProject_v2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -202,43 +205,6 @@ namespace EurovisionHub.Migrations
                     b.HasIndex("SongId");
 
                     b.ToTable("Participation", (string)null);
-                });
-
-            modelBuilder.Entity("EurovisionHub.Models.RoleRequest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("AdminComment")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Motivation")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)");
-
-                    b.Property<string>("RequestedRole")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("RoleRequests");
                 });
 
             modelBuilder.Entity("EurovisionHub.Models.Song", b =>
@@ -481,17 +447,6 @@ namespace EurovisionHub.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("Song");
-                });
-
-            modelBuilder.Entity("EurovisionHub.Models.RoleRequest", b =>
-                {
-                    b.HasOne("EurovisionHub.Models.ApplicationUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("EurovisionHub.Models.Vote", b =>

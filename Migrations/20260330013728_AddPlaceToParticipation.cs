@@ -12,7 +12,6 @@ namespace EurovisionHub.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            // Ми кажемо EF просто додати колонку до вже існуючої таблиці
             migrationBuilder.AddColumn<int>(
                 name: "Place",
                 table: "Participation",
@@ -23,7 +22,6 @@ namespace EurovisionHub.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            // Якщо захочемо відкотити міграцію — видаляємо цю колонку
             migrationBuilder.DropColumn(
                 name: "Place",
                 table: "Participation");

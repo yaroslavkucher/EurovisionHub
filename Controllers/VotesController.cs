@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using EurovisionHub.Models;
+using EurovisionHub.Enums;
 
 namespace EurovisionHub.Controllers
 {
@@ -93,6 +94,11 @@ namespace EurovisionHub.Controllers
 
             ViewData["FromCountry"] = new SelectList(fromCountries, "Id", "Name");
             ViewData["ToCountry"] = new SelectList(toParticipations, "Id", "DisplayName");
+            ViewData["VotingType"] = new SelectList(
+        Enum.GetValues(typeof(VotingType))
+        .Cast<VotingType>()
+        .Select(v => new { Value = (int)v, Text = v.ToString() }),
+    "Value", "Text");
             ViewBag.SelectedEventId = selectedEventId;
 
             return View();
@@ -156,6 +162,11 @@ namespace EurovisionHub.Controllers
 
                     ViewData["FromCountry"] = new SelectList(_fromCountries, "Id", "Name");
                     ViewData["ToCountry"] = new SelectList(_toParticipations, "Id", "DisplayName");
+                    ViewData["VotingType"] = new SelectList(
+        Enum.GetValues(typeof(VotingType))
+        .Cast<VotingType>()
+        .Select(v => new { Value = (int)v, Text = v.ToString() }),
+    "Value", "Text");
                     ViewBag.SelectedEventId = vote.EventId;
 
                     return View(vote);
@@ -183,6 +194,11 @@ namespace EurovisionHub.Controllers
 
             ViewData["FromCountry"] = new SelectList(fromCountries, "Id", "Name");
             ViewData["ToCountry"] = new SelectList(toParticipations, "Id", "DisplayName");
+            ViewData["VotingType"] = new SelectList(
+        Enum.GetValues(typeof(VotingType))
+        .Cast<VotingType>()
+        .Select(v => new { Value = (int)v, Text = v.ToString() }),
+    "Value", "Text");
             ViewBag.SelectedEventId = vote.EventId;
 
             return View(vote);
@@ -219,6 +235,11 @@ namespace EurovisionHub.Controllers
 
             ViewData["FromCountry"] = new SelectList(fromCountries, "Id", "Name");
             ViewData["ToCountry"] = new SelectList(toParticipations, "Id", "DisplayName");
+            ViewData["VotingType"] = new SelectList(
+        Enum.GetValues(typeof(VotingType))
+        .Cast<VotingType>()
+        .Select(v => new { Value = (int)v, Text = v.ToString() }),
+    "Value", "Text");
             ViewBag.SelectedEventId = vote.EventId;
             return View(vote);
         }
@@ -273,6 +294,11 @@ namespace EurovisionHub.Controllers
 
             ViewData["FromCountry"] = new SelectList(fromCountries, "Id", "Name");
             ViewData["ToCountry"] = new SelectList(toParticipations, "Id", "DisplayName");
+            ViewData["VotingType"] = new SelectList(
+        Enum.GetValues(typeof(VotingType))
+        .Cast<VotingType>()
+        .Select(v => new { Value = (int)v, Text = v.ToString() }),
+    "Value", "Text");
             ViewBag.SelectedEventId = vote.EventId;
 
             return View(vote);
@@ -321,22 +347,6 @@ namespace EurovisionHub.Controllers
         {
             return _context.Votes.Any(e => e.Id == id);
         }
-        /*public IActionResult VotingPage(int? eventId)
-        {
-            var viewModel = new VotingViewModel();
-            viewModel.Events = _context.Events.ToList(); // Завантажуємо список для вибору
-
-            if (eventId.HasValue)
-            {
-                // Логіка, якщо захід вже обрано
-                viewModel.SelectedEventId = eventId.Value;
-                viewModel.Participations = _context.Participations
-                                          .Where(p => p.EventId == eventId.Value)
-                                          .ToList();
-            }
-
-            return View(viewModel);
-        }*/
         public async Task<IActionResult> Export(int? eventId)
         {
             var votesQuery = _context.Votes
@@ -354,7 +364,6 @@ namespace EurovisionHub.Controllers
                 var currentEvent = await _context.Events.FindAsync(eventId.Value);
                 if (currentEvent != null)
                 {
-                    // Прибираємо пробіли для гарної назви файлу
                     fileNamePrefix = currentEvent.Name.Replace(" ", "_");
                 }
             }
@@ -366,7 +375,6 @@ namespace EurovisionHub.Controllers
                 var worksheet = workbook.Worksheets.Add("Votes");
                 var currentRow = 1;
 
-                // Заголовки (робимо їх жирними)
                 worksheet.Cell(currentRow, 1).Value = "Event";
                 worksheet.Cell(currentRow, 2).Value = "From Country";
                 worksheet.Cell(currentRow, 3).Value = "To Country";
@@ -374,7 +382,6 @@ namespace EurovisionHub.Controllers
                 worksheet.Cell(currentRow, 5).Value = "Is Jury (Jury/Televote)";
                 worksheet.Range(1, 1, 1, 5).Style.Font.Bold = true;
 
-                // Дані
                 foreach (var vote in votes)
                 {
                     currentRow++;
@@ -385,7 +392,6 @@ namespace EurovisionHub.Controllers
                     worksheet.Cell(currentRow, 5).Value = vote.IsJury ? "Jury" : "Televote";
                 }
 
-                // Авто-ширина колонок
                 worksheet.Columns().AdjustToContents();
 
                 using (var stream = new MemoryStream())
@@ -427,7 +433,7 @@ namespace EurovisionHub.Controllers
         {
             if (importFile == null || importFile.Length == 0)
             {
-                return RedirectToAction(nameof(Index)); // Можна додати сповіщення про пустий файл
+                return RedirectToAction(nameof(Index)); // Add a message about empty file!
             }
 
             var errorLog = new StringBuilder();
@@ -441,7 +447,7 @@ namespace EurovisionHub.Controllers
                     using (var workbook = new XLWorkbook(stream))
                     {
                         var worksheet = workbook.Worksheet(1);
-                        var rows = worksheet.RangeUsed().RowsUsed().Skip(1); // Пропускаємо перший рядок (заголовки)
+                        var rows = worksheet.RangeUsed().RowsUsed().Skip(1);
 
                         foreach (var row in rows)
                         {
@@ -454,15 +460,12 @@ namespace EurovisionHub.Controllers
                                 string pointsStr = row.Cell(4).GetString().Trim();
                                 string isJuryStr = row.Cell(5).GetString().Trim();
 
-                                // 1. Пошук Івенту
                                 var ev = await _context.Events.FirstOrDefaultAsync(e => e.Name == eventName);
                                 if (ev == null) { errorLog.AppendLine($"Row {rowNum}: Event '{eventName}' not found in database."); continue; }
 
-                                // 2. Пошук From Country
                                 var fromCountry = await _context.Countries.FirstOrDefaultAsync(c => c.Name == fromCountryName);
                                 if (fromCountry == null) { errorLog.AppendLine($"Row {rowNum}: 'From Country' '{fromCountryName}' not found."); continue; }
 
-                                // 3. Пошук To Country та перевірка її участі (Participation)
                                 var toCountry = await _context.Countries.FirstOrDefaultAsync(c => c.Name == toCountryName);
                                 if (toCountry == null) { errorLog.AppendLine($"Row {rowNum}: 'To Country' '{toCountryName}' not found."); continue; }
 
@@ -471,18 +474,15 @@ namespace EurovisionHub.Controllers
                                 var participation = await _context.Participations.FirstOrDefaultAsync(p => p.EventId == ev.Id && p.CountryId == toCountry.Id);
                                 if (participation == null) { errorLog.AppendLine($"Row {rowNum}: '{toCountryName}' did not participate in '{eventName}'."); continue; }
 
-                                // 4. Валідація Points
                                 if (!int.TryParse(pointsStr, out int points) || points < 1 || points > 12 || points == 11 || points == 9)
                                 {
                                     errorLog.AppendLine($"Row {rowNum}: Invalid points '{pointsStr}'. Must be 1-8 or 10 or 12."); continue;
                                 }
 
-                                // 5. Парсинг IsJury
                                 bool isJury = isJuryStr.Equals("True", StringComparison.OrdinalIgnoreCase) ||
                                               isJuryStr.Equals("Jury", StringComparison.OrdinalIgnoreCase) ||
                                               isJuryStr == "1";
 
-                                // 6. Перевірка на дублікати (як у твоєму Create)
                                 var existingVote = await _context.Votes.AnyAsync(v =>
                                     v.FromCountryId == fromCountry.Id &&
                                     v.ToParticipationId == participation.Id &&
@@ -498,7 +498,6 @@ namespace EurovisionHub.Controllers
                                 if (existingVote) { errorLog.AppendLine($"Row {rowNum}: Vote from {fromCountryName} to {toCountryName} already exists."); continue; }
                                 if (isDuplicatePoints) { errorLog.AppendLine($"Row {rowNum}: {fromCountryName} already gave {points} points in this category."); continue; }
 
-                                // Якщо все добре — додаємо
                                 var vote = new Vote
                                 {
                                     EventId = ev.Id,
@@ -524,7 +523,6 @@ namespace EurovisionHub.Controllers
                 }
             }
 
-            // Якщо є помилки, повертаємо файл з логами
             if (errorLog.Length > 0)
             {
                 string logHeader = $"Import Results:\nSuccessfully added: {addedCount} votes.\n\nErrors encountered:\n-------------------\n";
@@ -533,7 +531,6 @@ namespace EurovisionHub.Controllers
                 return File(fileBytes, "text/plain", logFileName);
             }
 
-            // Якщо все ідеально, просто повертаємо на сторінку
             return RedirectToAction(nameof(Index));
         }
     }

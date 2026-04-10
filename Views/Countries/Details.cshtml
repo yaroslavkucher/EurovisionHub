@@ -71,7 +71,6 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-    // Отримуємо дані з ViewBag
     const years = @Html.Raw(Json.Serialize(ViewBag.Years));
     const places = @Html.Raw(Json.Serialize(ViewBag.Places));
 
@@ -83,13 +82,13 @@
     datasets: [{
     label: 'Місце у фіналі',
     data: places,
-    borderColor: '#00d1ff', // Яскравий блакитний для лінії
-    backgroundColor: 'rgba(0, 209, 255, 0.2)', // Напівпрозорий фон під лінією
+    borderColor: '#00d1ff',
+    backgroundColor: 'rgba(0, 209, 255, 0.2)',
     borderWidth: 4,
-    fill: true,
+    fill: false,
     tension: 0.3,
     pointRadius: 6,
-    pointBackgroundColor: '#ff0050', // Яскравий рожевий для точок
+    pointBackgroundColor: '#ff0050',
     pointBorderColor: 'white',
     pointBorderWidth: 2
     }]
@@ -100,34 +99,34 @@
     plugins: {
     legend: {
     labels: {
-    color: 'white', // Білий колір для тексту легенди
+    color: 'white',
     font: { size: 14 }
     }
     }
     },
     scales: {
     y: {
-    reverse: true, // 1-ше місце вгорі
+    reverse: true,
     beginAtZero: false,
     grid: {
-    color: 'rgba(255, 255, 255, 0.1)' // Світла ледь помітна сітка
+    color: 'rgba(255, 255, 255, 0.1)'
     },
     ticks: {
-    color: 'white', // Білі цифри на осі Y
+    color: 'white',
     stepSize: 1
     },
     title: {
     display: true,
     text: 'Місце',
-    color: 'white' // Білий заголовок осі
+    color: 'white'
     }
     },
     x: {
     grid: {
-    display: false // Прибираємо вертикальні лінії сітки для чистоти
+    display: false
     },
     ticks: {
-    color: 'white' // Білі роки на осі X
+    color: 'white'
     },
     title: {
     display: true,

@@ -31,11 +31,6 @@ html {
     vertical-align: middle;
 }
 
-.url-text {
-    /*font-size: 0.85rem;*/
-   /* color: #6c757d;*/ /* Колір "приглушеного" тексту */
-}
-
 .url-blur-overlay {
     position: absolute;
     top: 0;
@@ -49,6 +44,7 @@ html {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin: 10px 0 15px 0;
 }
 
 .page-first-row> a{
@@ -64,14 +60,12 @@ html {
     background-color:  burlywood;
 }
 
-/* Фоновий градієнт для всього сайту, щоб підкреслити прозорість */
 body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     background-attachment: fixed;
     color: white;
 }
 
-/* Контейнер з ефектом скла */
 .glass-container {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -103,7 +97,6 @@ body {
     margin: 20px 0;
 }
 
-/* Стилі для зворотного відліку */
 #countdown {
     display: flex;
     gap: 15px;
@@ -132,8 +125,6 @@ header {
     z-index: 1000;
 }
 
-/* Оновлений хедер */
-
 .my-nav {
     align-items: center;
 }
@@ -152,7 +143,7 @@ header {
 
 .modern-navbar {
     display: flex !important;
-    gap: 20px;
+    gap: 10px;
     list-style: none;
     align-items: center;
     margin: 0 !important;
@@ -176,11 +167,10 @@ header {
     .glass-navbar .navbar-brand {
         color: #fff !important;
         font-weight: 850;
-        font-size: 25px;
+        font-size: 30px;
         letter-spacing: 1px;
     }
 
-/* Оновлений футер */
 .glass-footer {
     background: rgba(255, 255, 255, 0.05) !important;
     backdrop-filter: blur(15px);
@@ -202,7 +192,6 @@ header {
 
 /* --- Скляні Таблиці --- */
 
-/* 1. Повне видалення квадратної рамки навколо контейнера */
 .table-responsive {
     border-radius: 15px;
     border: none !important;
@@ -211,7 +200,6 @@ header {
     -webkit-overflow-scrolling: touch;
 }
 
-/* 2. Оновлена скляна таблиця з захистом від стискання */
 .glass-table {
     background: rgba(255, 255, 255, 0.1) !important;
     backdrop-filter: blur(15px);
@@ -220,17 +208,16 @@ header {
     border-radius: 15px !important;
     color: white !important;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-    border-collapse: separate !important; /* Важливо для заокруглення */
+    border-collapse: separate !important;
     border-spacing: 0;
-    overflow: hidden; /* Обрізає кути внутрішніх елементів під радіус 15px */
-    min-width: 800px; /* ЗАХИСТ ВІД СТИСКАННЯ: таблиця не стане меншою за 800px */
+    overflow: hidden;
+    min-width: 800px;
     width: 100%;
 }
 
-/* 3. Очищення стандартних стилів Bootstrap */
 table {
     --bs-table-bg: transparent !important;
-    --bs-table-border-color: transparent !important; /* Прибирає внутрішні лінії, якщо вони заважають */
+    --bs-table-border-color: transparent !important;
     margin-bottom: 0 !important;
     border: none !important;
 }
@@ -243,7 +230,6 @@ table {
     color: white;
 }
 
-/* 4. Заокруглення для шапки (щоб фон не вилазив за межі) */
 .glass-table thead th:first-child {
     border-top-left-radius: 15px;
 }
@@ -252,9 +238,7 @@ table {
     border-top-right-radius: 15px;
 }
 
-/* Прибираємо ту саму зайву дужку в кінці файлу, якщо вона там лишилася */
 
-/* --- Оновлена Кнопка "Додати" --- */
 .btn-glass-add,
 .btn-glass-edit,
 .btn-glass-delete,
@@ -263,7 +247,7 @@ table {
     -webkit-backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.4);
     color: white !important;
-    padding: 10px 25px; /* Уніфікував розмір для всіх */
+    padding: 10px 25px; 
     border-radius: 12px;
     font-weight: 600;
     font-size: 0.95rem;
@@ -276,7 +260,7 @@ table {
     cursor: pointer;
 }
 
-/* 2. Кольори фону в спокійному стані */
+
 .btn-glass-add {
     background: rgba(40, 167, 69, 0.3);
 }
@@ -293,17 +277,15 @@ table {
     background: rgba(255, 255, 255, 0.2);
 }
 
-    /* 3. ОДНАКОВА АНІМАЦІЯ ПРИ НАВЕДЕННІ (як у Add) */
     .btn-glass-add:hover,
     .btn-glass-edit:hover,
     .btn-glass-delete:hover,
     .btn-glass-submit:hover {
-        transform: translateY(-2px); /* Підняття вгору */
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Уніфікована тінь */
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         color: white !important;
     }
 
-/* 4. Індивідуальна зміна яскравості при наведенні */
 .btn-glass-add:hover {
     background: rgba(40, 167, 69, 0.5);
 }
@@ -320,7 +302,6 @@ table {
     background: rgba(255, 255, 255, 0.35);
 }
 
-/* Поля вводу (Inputs) теж зробимо скляними */
 .form-control {
     background: rgba(255, 255, 255, 0.1) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
@@ -334,7 +315,6 @@ table {
         border-color: rgba(255, 255, 255, 0.4) !important;
     }
 
-    /* Виправлення тексту в плейсхолдерах */
     .form-control::placeholder {
         color: rgba(255, 255, 255, 0.5) !important;
     }
@@ -350,7 +330,7 @@ table {
 }
 
 select.form-control option {
-    background-color: #656288 !important; /* Глибокий фіолетовий під колір градієнта */
+    background-color: #656288 !important;
     color: white !important;
     padding: 10px;
 }
@@ -360,7 +340,7 @@ select.form-control {
     background-repeat: no-repeat !important;
     background-position: right 0.75rem center !important;
     background-size: 16px 12px !important;
-    appearance: none; /* Прибираємо стандартну стрілку */
+    appearance: none;
     cursor: pointer;
 }
 
@@ -368,3 +348,113 @@ select.form-control {
     background-color: indianred !important;
     border-color: red !important;
 }
+
+.glass-card {
+    --bs-card-bg: rgba(255, 255, 255, 0.1);
+    --bs-card-border-width: 1px;
+    --bs-card-border-color: rgba(255, 255, 255, 0.2);
+    --bs-card-border-radius: 20px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-clip: border-box;
+    background-color: var(--bs-card-bg);
+    border: var(--bs-card-border-width) solid var(--bs-card-border-color);
+    border-radius: var(--bs-card-border-radius);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    color: #fff;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    overflow: hidden;
+}
+
+/* --- Шапка картки --- */
+.glass-card-header {
+    background: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 1.25rem 1.5rem;
+    font-size: 1.25rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* --- Тіло картки --- */
+.glass-card-body {
+    background: transparent;
+    padding: 1.5rem;
+}
+
+/* --- Скляне поле вводу (Textarea) --- */
+.glass-input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    resize: none;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+    .glass-input:focus {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.4);
+        box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.1);
+        color: white;
+        outline: none;
+    }
+
+    .glass-input::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* --- Скляний Скролбар --- */
+    .glass-input::-webkit-scrollbar {
+        width: 14px;
+    }
+
+    .glass-input::-webkit-scrollbar-track {
+        background: transparent;
+        margin: 10px 0;
+    }
+
+    .glass-input::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+    }
+
+        .glass-input::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+/* --- Скляне модальне вікно --- */
+.modal-content {
+    background: rgba(40, 30, 60, 0.4) !important;
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5) !important;
+    border-radius: 20px !important;
+    color: white !important;
+}
+
+.modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.modal-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.modal-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+    opacity: 0.8;
+}
+
+    .modal-header .btn-close:hover {
+        opacity: 1;
+    }
