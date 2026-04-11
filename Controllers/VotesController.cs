@@ -94,11 +94,6 @@ namespace EurovisionHub.Controllers
 
             ViewData["FromCountry"] = new SelectList(fromCountries, "Id", "Name");
             ViewData["ToCountry"] = new SelectList(toParticipations, "Id", "DisplayName");
-            ViewData["VotingType"] = new SelectList(
-        Enum.GetValues(typeof(VotingType))
-        .Cast<VotingType>()
-        .Select(v => new { Value = (int)v, Text = v.ToString() }),
-    "Value", "Text");
             ViewBag.SelectedEventId = selectedEventId;
 
             return View();
@@ -162,11 +157,6 @@ namespace EurovisionHub.Controllers
 
                     ViewData["FromCountry"] = new SelectList(_fromCountries, "Id", "Name");
                     ViewData["ToCountry"] = new SelectList(_toParticipations, "Id", "DisplayName");
-                    ViewData["VotingType"] = new SelectList(
-        Enum.GetValues(typeof(VotingType))
-        .Cast<VotingType>()
-        .Select(v => new { Value = (int)v, Text = v.ToString() }),
-    "Value", "Text");
                     ViewBag.SelectedEventId = vote.EventId;
 
                     return View(vote);
@@ -194,11 +184,6 @@ namespace EurovisionHub.Controllers
 
             ViewData["FromCountry"] = new SelectList(fromCountries, "Id", "Name");
             ViewData["ToCountry"] = new SelectList(toParticipations, "Id", "DisplayName");
-            ViewData["VotingType"] = new SelectList(
-        Enum.GetValues(typeof(VotingType))
-        .Cast<VotingType>()
-        .Select(v => new { Value = (int)v, Text = v.ToString() }),
-    "Value", "Text");
             ViewBag.SelectedEventId = vote.EventId;
 
             return View(vote);
@@ -235,11 +220,6 @@ namespace EurovisionHub.Controllers
 
             ViewData["FromCountry"] = new SelectList(fromCountries, "Id", "Name");
             ViewData["ToCountry"] = new SelectList(toParticipations, "Id", "DisplayName");
-            ViewData["VotingType"] = new SelectList(
-        Enum.GetValues(typeof(VotingType))
-        .Cast<VotingType>()
-        .Select(v => new { Value = (int)v, Text = v.ToString() }),
-    "Value", "Text");
             ViewBag.SelectedEventId = vote.EventId;
             return View(vote);
         }
@@ -294,11 +274,6 @@ namespace EurovisionHub.Controllers
 
             ViewData["FromCountry"] = new SelectList(fromCountries, "Id", "Name");
             ViewData["ToCountry"] = new SelectList(toParticipations, "Id", "DisplayName");
-            ViewData["VotingType"] = new SelectList(
-        Enum.GetValues(typeof(VotingType))
-        .Cast<VotingType>()
-        .Select(v => new { Value = (int)v, Text = v.ToString() }),
-    "Value", "Text");
             ViewBag.SelectedEventId = vote.EventId;
 
             return View(vote);

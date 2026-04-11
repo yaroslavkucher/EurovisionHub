@@ -37,6 +37,9 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn-glass-edit">Edit</a> |
+    @if (User.IsAdmin())
+    {
+        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn-glass-edit">Edit</a><p>|</p>
+    }
     <a asp-action="Index">Back to List</a>
 </div>

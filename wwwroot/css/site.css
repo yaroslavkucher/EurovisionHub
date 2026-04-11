@@ -41,13 +41,11 @@ html {
 }
 
 .page-first-row {
-    display: flex;
     align-items: center;
-    justify-content: space-between;
     margin: 10px 0 15px 0;
 }
 
-.page-first-row> a{
+/*.page-first-row> a{
     border-radius: 8px;
     background-color: antiquewhite;
     padding: 10px 15px;
@@ -58,7 +56,7 @@ html {
 
 .page-first-row> a:hover{
     background-color:  burlywood;
-}
+}*/
 
 body {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -228,6 +226,12 @@ table {
 
 .table tbody td {
     color: white;
+    align-content: center;
+}
+
+edit-menu {
+    display: flex;
+    gap: 4px;
 }
 
 .glass-table thead th:first-child {
@@ -242,12 +246,13 @@ table {
 .btn-glass-add,
 .btn-glass-edit,
 .btn-glass-delete,
-.btn-glass-submit {
+.btn-glass-submit,
+.btn-edit-types {
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.4);
     color: white !important;
-    padding: 10px 25px; 
+    padding: 10px 25px;
     border-radius: 12px;
     font-weight: 600;
     font-size: 0.95rem;
@@ -277,14 +282,19 @@ table {
     background: rgba(255, 255, 255, 0.2);
 }
 
-    .btn-glass-add:hover,
-    .btn-glass-edit:hover,
-    .btn-glass-delete:hover,
-    .btn-glass-submit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        color: white !important;
-    }
+.btn-edit-types {
+    background: rgba(151, 18, 214, 0.20)
+}
+
+.btn-glass-add:hover,
+.btn-glass-edit:hover,
+.btn-glass-delete:hover,
+.btn-glass-submit:hover,
+.btn-edit-types:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    color: white !important;
+}
 
 .btn-glass-add:hover {
     background: rgba(40, 167, 69, 0.5);
@@ -300,6 +310,10 @@ table {
 
 .btn-glass-submit:hover {
     background: rgba(255, 255, 255, 0.35);
+}
+
+.btn-edit-types:hover {
+    background: rgba(151, 18, 214, 0.35)
 }
 
 .form-control {

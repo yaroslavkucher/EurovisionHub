@@ -3,12 +3,18 @@
 @{
     ViewData["Title"] = "Events";
 }
-<div class="page-first-row">
+<div class="page-first-row" style="display: flex; justify-content: space-between;">
     <div class="page-info">
     <h1>Events</h1>
-    <a asp-action="Create" class="btn-glass-add">+ Add New</a>
+        @if (User.IsAdmin())
+    {
+        <a asp-action="Create" class="btn-glass-add">+ Add New</a>
+    }
     </div>
-    <a asp-area="" asp-controller="EventTypes" asp-action="Index">Edit event types</a>
+    @if (User.IsAdmin())
+    {
+        <a asp-area="" asp-controller="EventTypes" asp-action="Index" class="btn-edit-types">Edit event types</a>
+    }
 </div>
 
 <div class="table-responsive">
@@ -49,15 +55,25 @@
                 @item.Date.Value.ToString("dd.MM.yyyy HH:mm")
             </td>
             <td>
+                        <div class="edit-menu">
+                        @if (User.IsAdmin())
+                {
                     <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none">
                         <img src="~/img/edit.png" alt="Edit" style="width:20px; height:20px;" />
-                    </a> |
+                    </a>
+                    <span>|</span>
+                }
                     <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
                         <img src="~/img/info.png" alt="Details" style="width:23px; height:23px;" />
-                    </a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none">
-                        <img src="~/img/delete.png" alt="Delete" style="width:20px; height:20px;" />
                     </a>
+                        @if (User.IsAdmin())
+                    {
+                        <span>|</span>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none">
+                            <img src="~/img/delete.png" alt="Delete" style="width:20px; height:20px;" />
+                        </a>
+                    }
+                    </div>
             </td>
         </tr>
 }

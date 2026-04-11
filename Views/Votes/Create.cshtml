@@ -29,8 +29,11 @@
             </div>
 
             <div class="mb-3">
-                <label asp-for="IsJury" class="control-label"></label>
-                <select asp-for="IsJury" class="form-control" asp-items="ViewBag.VotingType"></select>
+                <label asp-for="IsJury" class="control-label">@Html.DisplayNameFor(model => model.IsJury)</label>
+                <select asp-for="IsJury" class="form-control">
+                    <option value="true">Jury</option>
+                    <option value="false">Televote</option>
+                </select>
                 <span asp-validation-for="IsJury" class="text-danger"></span>
             </div>
 

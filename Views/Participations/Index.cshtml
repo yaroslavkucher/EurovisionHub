@@ -4,11 +4,15 @@
     ViewData["Title"] = "Participations";
 }
 
+<div class="page-first-row">
+    <div>
 <h1>Participations</h1>
-
-<p>
+@if (User.IsAdmin())
+{
     <a asp-action="Create" class="btn-glass-add">+ Add New</a>
-</p>
+}
+</div>
+</div>
 
 <div class="table-responsive">
 <table class="table glass-table">
@@ -42,7 +46,7 @@
                 @Html.DisplayFor(modelItem => item.Country.Name)
             </td>
             <td>
-                <p>@Html.DisplayFor(modelItem => item.Song.Artist) - @Html.DisplayFor(modelItem => item.Song.Title)</p>
+                <span>@Html.DisplayFor(modelItem => item.Song.Artist) - @Html.DisplayFor(modelItem => item.Song.Title)</span>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.OrderNumber)
@@ -52,15 +56,25 @@
             </td>
             
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none">
+                <div class="edit-menu">
+                @if (User.IsAdmin())
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none">
                         <img src="~/img/edit.png" alt="Edit" style="width:20px; height:20px;" />
-                    </a> |
+                    </a>
+                    <span>|</span>
+                }
                     <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
                         <img src="~/img/info.png" alt="Details" style="width:23px; height:23px;" />
-                </a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none">
-                        <img src="~/img/delete.png" alt="Delete" style="width:20px; height:20px;" />
-                </a>
+                    </a>
+                @if (User.IsAdmin())
+                {
+                        <span>|</span>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none">
+                            <img src="~/img/delete.png" alt="Delete" style="width:20px; height:20px;" />
+                        </a>
+                }
+                </div>
             </td>
         </tr>
 }

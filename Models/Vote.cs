@@ -13,12 +13,12 @@ public partial class Vote : IValidatableObject
     public int ToParticipationId { get; set; }
 
     [Required(ErrorMessage = "Points is required")]
-    [Range(1, 12, ErrorMessage = "Points must be between 1 and 12, but without 11.")]
+    [Range(1, 12, ErrorMessage = "Points must be between 1 and 12, but without 9 and 11.")]
     public int Points { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (Points == 11)
+        if (Points == 9 || Points == 11)
         {
             yield return new ValidationResult("This number of points does not correspond to the participant evaluation system", new[] { nameof(Points) });
         }

@@ -9,12 +9,15 @@
 <div class="page-first-row">
     <div>
         <h1>Countries</h1>
-        <a asp-action="Create" class="btn-glass-add">+ Add New</a>
+        @if (User.IsAdmin())
+        {
+            <a asp-action="Create" class="btn-glass-add">+ Add New</a>
+        }
     </div>
 </div>
 @if (!Model.Any())
 {
-    @if (User.IsInRole("SuperAdmin") || User.IsInRole("Admin"))
+    @if (User.IsAdmin())
     {
         <div class="alert alert-info">
             There are no countries here. Add a new country!
@@ -71,11 +74,21 @@ else
                     <td>@item.Name</td>
                     <td>@item.Code</td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id"><img src="~/img/edit.png" style="width:20px;" /></a>
-                        <a asp-action="Details" asp-route-id="@item.Id"><img src="~/img/info.png" style="width:23px;" /></a>
-                        <a asp-action="Delete" asp-route-id="@item.Id" style="color:red">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="lucide lucide-trash-2"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2m-6 5v6m4-6v6" /></svg>
-                        </a>
+                            <div class="edit-menu">
+                                @if (User.IsAdmin())
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.Id"><img src="~/img/edit.png" style="width:20px;" /></a>
+                                    <span>|</span>
+                                }
+                                <a asp-action="Details" asp-route-id="@item.Id"><img src="~/img/info.png" style="width:23px;" /></a>
+                                @if (User.IsAdmin())
+                                {
+                                    <span>|</span>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" style="color:red">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="lucide lucide-trash-2"><path d="M3 6h18m-2 0v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6m3 0V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2m-6 5v6m4-6v6" /></svg>
+                                    </a>
+                                }
+                            </div>
                     </td>
                 </tr>
             }

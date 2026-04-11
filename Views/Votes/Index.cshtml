@@ -4,6 +4,8 @@
     ViewData["Title"] = "Votes";
 }
 
+<div class="page-first-row">
+
 @if (Model.SelectedEventId.HasValue)
 {
     <h1>@Model.SelectedEventName</h1>
@@ -14,9 +16,12 @@ else
 }
 
 <div class="d-flex justify-content-between mb-4">
-    <div class="align-content-center">
-        <a asp-action="Create" asp-route-selectedEventId="@Model.SelectedEventId" class="btn-glass-add">+ Add New</a>
-    </div>
+    @if (User.IsAdmin())
+    {
+        <div class="align-content-center">
+            <a asp-action="Create" asp-route-selectedEventId="@Model.SelectedEventId" class="btn-glass-add">+ Add New</a>
+        </div>
+    }
 
     <div class="d-flex flex-column gap-2">
         <div class="dropdown">
@@ -31,11 +36,14 @@ else
                 <li><a class="dropdown-item" asp-action="Export">Export All Events</a></li>
             </ul>
         </div>
-
-        <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#importModal">
-            Import Data
-        </button>
+        @if (User.IsAdmin())
+        {
+            <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#importModal">
+                Import Data
+            </button>
+        }
     </div>
+</div>
 </div>
 
 <div class="table-responsive">
@@ -60,15 +68,25 @@ else
                 </td>
                 <td>@item.Points</td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none">
-                        <img src="~/img/edit.png" alt="Edit" style="width:20px; height:20px;" />
-                    </a> |
-                    <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
-                        <img src="~/img/info.png" alt="Details" style="width:23px; height:23px;" />
-                    </a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none">
-                        <img src="~/img/delete.png" alt="Delete" style="width:20px; height:20px;" />
-                    </a>
+                    <div class="edit-menu">
+                        @if (User.IsAdmin())
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none">
+                                    <img src="~/img/edit.png" alt="Edit" style="width:20px; height:20px;" />
+                                </a>
+                                <span>|</span>
+                            }
+                            <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
+                                <img src="~/img/info.png" alt="Details" style="width:23px; height:23px;" />
+                            </a>
+                        @if (User.IsAdmin())
+                            {
+                                <span>|</span>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none">
+                                    <img src="~/img/delete.png" alt="Delete" style="width:20px; height:20px;" />
+                                </a>
+                            }
+                    </div>
                 </td>
             </tr>
         }
