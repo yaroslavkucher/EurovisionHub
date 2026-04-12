@@ -18,13 +18,6 @@ namespace EurovisionHub.Models.ViewModels
         [Display(Name = "Password confirmation")]
         [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string ConfirmPassword { get; set; }
-
-        [Display(Name = "I want to become a Content Administrator")]
-        public bool WantsToBeAdmin { get; set; }
-
-        [Display(Name = "Why do you want to become an admin?")]
-        [StringLength(500)]
-        public string? Motivation { get; set; }
     }
 
     public class LoginViewModel

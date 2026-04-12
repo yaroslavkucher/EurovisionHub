@@ -58,4 +58,9 @@ public class AdminPanelController : Controller
         await _context.SaveChangesAsync();
         return RedirectToAction(nameof(Requests));
     }
+
+    public IActionResult Users()
+    {
+        return View();
+    }
 }

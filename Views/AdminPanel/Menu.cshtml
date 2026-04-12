@@ -1,0 +1,10 @@
+﻿<ul class="nav nav-pills mb-4">
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Requests" ? "active" : "")" 
+           asp-controller="AdminPanel" asp-action="Requests">Applications</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Users" ? "active" : "")" 
+           asp-controller="AdminPanel" asp-action="Users">Users</a>
+    </li>
+</ul>

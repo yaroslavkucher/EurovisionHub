@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Views\AdminPanel\Menu.cshtml" />
     <Content Remove="Views\Votes\Index1.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="Views\AdminPanel\Menu.cshtml" />
   </ItemGroup>
 
   <ItemGroup>

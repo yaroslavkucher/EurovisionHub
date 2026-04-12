@@ -40,20 +40,6 @@ namespace EurovisionHub.Controllers
                 {
                     await _userManager.AddToRoleAsync(user, "User");
 
-                    if (model.WantsToBeAdmin && !string.IsNullOrEmpty(model.Motivation))
-                    {
-                        var roleRequest = new RoleRequest
-                        {
-                            UserId = user.Id,
-                            RequestedRole = "Admin",
-                            Motivation = model.Motivation,
-                            Status = RequestStatus.Pending
-                        };
-
-                        _context.RoleRequests.Add(roleRequest);
-                        await _context.SaveChangesAsync();
-                    }
-
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
                 }
@@ -86,7 +72,7 @@ namespace EurovisionHub.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                ModelState.AddModelError(string.Empty, "Невірна спроба входу. Перевірте пошту та пароль.");
+                ModelState.AddModelError(string.Empty, "Invalid login attempt. Check your email and password.");
             }
             return View(model);
         }

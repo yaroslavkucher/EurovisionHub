@@ -1,5 +1,9 @@
 ﻿@model EurovisionHub.Models.ViewModels.RegisterViewModel
 
+@{
+    ViewData["Title"] = "Sign Up";
+}
+
 <h2>Sign Up</h2>
 
 <div class="row">
@@ -24,19 +28,7 @@
                 <input asp-for="ConfirmPassword" class="form-control" />
                 <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
-
-            <div class="form-group form-check mb-3">
-                <label class="form-check-label">
-                    <input class="form-check-input" id="wantsAdminCheckbox" asp-for="WantsToBeAdmin" /> @Html.DisplayNameFor(model => model.WantsToBeAdmin)
-                </label>
-            </div>
-
-            <div class="form-group mb-3" id="motivationGroup" style="display: none;">
-                <label asp-for="Motivation" class="control-label"></label>
-                <textarea asp-for="Motivation" class="form-control" rows="3" placeholder="Напишіть кілька слів про свій досвід чи плани щодо наповнення сайту..."></textarea>
-                <span asp-validation-for="Motivation" class="text-danger"></span>
-            </div>
-            
+             
             <div class="form-group">
                 <input type="submit" value="Sign Up" class="btn btn-primary" />
             </div>
@@ -45,12 +37,6 @@
 </div>
 
 @section Scripts {
-    <script>
-        document.getElementById('wantsAdminCheckbox').addEventListener('change', function() {
-            const motivationGroup = document.getElementById('motivationGroup');
-            motivationGroup.style.display = this.checked ? 'block' : 'none';
-        });
-    </script>
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
