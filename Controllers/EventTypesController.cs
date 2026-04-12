@@ -1,4 +1,5 @@
 ﻿using EurovisionHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace EurovisionHub.Controllers
 {
+    [Authorize(Roles = "Admin, SuperAdmin")]
     public class EventTypesController : Controller
     {
         private readonly EurovisionContext _context;

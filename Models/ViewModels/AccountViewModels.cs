@@ -4,42 +4,42 @@ namespace EurovisionHub.Models.ViewModels
 {
     public class RegisterViewModel
     {
-        [Required(ErrorMessage = "Пошта є обов'язковою")]
-        [EmailAddress(ErrorMessage = "Некоректний формат пошти")]
-        [Display(Name = "Електронна пошта")]
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Incorrect email format")]
+        [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Пароль є обов'язковим")]
+        [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
-        [Display(Name = "Пароль")]
+        [Display(Name = "Password")]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
-        [Display(Name = "Підтвердження пароля")]
-        [Compare("Password", ErrorMessage = "Паролі не співпадають")]
+        [Display(Name = "Password confirmation")]
+        [Compare("Password", ErrorMessage = "Passwords do not match")]
         public string ConfirmPassword { get; set; }
 
-        [Display(Name = "Хочу стати Адміністратором контенту")]
+        [Display(Name = "I want to become a Content Administrator")]
         public bool WantsToBeAdmin { get; set; }
 
-        [Display(Name = "Чому ви хочете стати адміном?")]
+        [Display(Name = "Why do you want to become an admin?")]
         [StringLength(500)]
         public string? Motivation { get; set; }
     }
 
     public class LoginViewModel
     {
-        [Required(ErrorMessage = "Пошта є обов'язковою")]
-        [EmailAddress(ErrorMessage = "Некоректний формат пошти")]
-        [Display(Name = "Електронна пошта")]
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Incorrect email format")]
+        [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required(ErrorMessage = "Пароль є обов'язковим")]
+        [Required(ErrorMessage = "Password is required")]
         [DataType(DataType.Password)]
-        [Display(Name = "Пароль")]
+        [Display(Name = "Password")]
         public string Password { get; set; }
 
-        [Display(Name = "Запам'ятати мене?")]
+        [Display(Name = "Remember me?")]
         public bool RememberMe { get; set; }
     }
 }

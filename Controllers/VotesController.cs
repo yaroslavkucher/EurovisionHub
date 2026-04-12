@@ -1,15 +1,16 @@
-﻿using System.IO;
-using System.Text;
-using ClosedXML.Excel;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ClosedXML.Excel;
+using EurovisionHub.Enums;
+using EurovisionHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using EurovisionHub.Models;
-using EurovisionHub.Enums;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace EurovisionHub.Controllers
 {
@@ -72,6 +73,7 @@ namespace EurovisionHub.Controllers
         }
 
         // GET: Votes/Create
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public IActionResult Create(int? selectedEventId)
         {
             if (selectedEventId == null) return RedirectToAction("Index");
@@ -102,6 +104,7 @@ namespace EurovisionHub.Controllers
         // POST: Votes/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin, SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,FromCountryId,ToParticipationId,Points,IsJury,EventId")] Vote vote)
@@ -190,6 +193,7 @@ namespace EurovisionHub.Controllers
         }
 
         // GET: Votes/Edit/5
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -227,6 +231,7 @@ namespace EurovisionHub.Controllers
         // POST: Votes/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin, SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,FromCountryId,ToParticipationId,Points,IsJury,EventId")] Vote vote)
@@ -280,6 +285,7 @@ namespace EurovisionHub.Controllers
         }
 
         // GET: Votes/Delete/5
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -303,6 +309,7 @@ namespace EurovisionHub.Controllers
         }
 
         // POST: Votes/Delete/5
+        [Authorize(Roles = "Admin, SuperAdmin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
@@ -379,6 +386,7 @@ namespace EurovisionHub.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public IActionResult DownloadTemplate()
         {
             using (var workbook = new XLWorkbook())
@@ -403,6 +411,7 @@ namespace EurovisionHub.Controllers
             }
         }
 
+        [Authorize(Roles = "Admin, SuperAdmin")]
         [HttpPost]
         public async Task<IActionResult> Import(IFormFile importFile)
         {

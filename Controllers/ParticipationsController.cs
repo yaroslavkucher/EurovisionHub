@@ -1,4 +1,5 @@
 ﻿using EurovisionHub.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -59,6 +60,7 @@ namespace EurovisionHub.Controllers
         }
 
         // GET: Participations/Create
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public IActionResult Create()
         {
             ViewData["Country"] = new SelectList(_context.Countries.OrderBy(c => c.Name), "Id", "Name");
@@ -75,6 +77,7 @@ namespace EurovisionHub.Controllers
         // POST: Participations/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin, SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,CountryId,SongId,EventId,OrderNumber,Place")] Participation participation)
@@ -106,6 +109,7 @@ namespace EurovisionHub.Controllers
         }
 
         // GET: Participations/Edit/5
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -132,6 +136,7 @@ namespace EurovisionHub.Controllers
         // POST: Participations/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Admin, SuperAdmin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,CountryId,SongId,EventId,OrderNumber,Place")] Participation participation)
@@ -186,6 +191,7 @@ namespace EurovisionHub.Controllers
         }
 
         // GET: Participations/Delete/5
+        [Authorize(Roles = "Admin, SuperAdmin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -207,6 +213,7 @@ namespace EurovisionHub.Controllers
         }
 
         // POST: Participations/Delete/5
+        [Authorize(Roles = "Admin, SuperAdmin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

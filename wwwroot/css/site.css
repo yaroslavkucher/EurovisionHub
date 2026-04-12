@@ -388,10 +388,11 @@ select.form-control {
 .glass-card-header {
     background: rgba(255, 255, 255, 0.05);
     border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-    padding: 1.25rem 1.5rem;
+    padding: 12px 0 6px 0;
     font-size: 1.25rem;
     font-weight: bold;
     text-align: center;
+    justify-items: center;
 }
 
 /* --- Тіло картки --- */

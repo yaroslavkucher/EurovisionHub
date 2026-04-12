@@ -99,7 +99,7 @@ namespace EurovisionHub.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [Authorize]
+        [Authorize(Roles = "User, Admin")]
         [HttpGet]
         public async Task<IActionResult> ApplyForAdmin()
         {
@@ -110,7 +110,7 @@ namespace EurovisionHub.Controllers
 
             if (existingRequest)
             {
-                TempData["error"] = "Ваша заявка вже розглядається СуперАдміном.";
+                TempData["error"] = "Your request is already being reviewed by the SuperAdmin.";
                 return RedirectToAction("Index", "Home");
             }
 
@@ -124,7 +124,7 @@ namespace EurovisionHub.Controllers
         {
             if (string.IsNullOrWhiteSpace(motivation))
             {
-                ModelState.AddModelError("motivation", "Будь ласка, вкажіть мотивацію.");
+                ModelState.AddModelError("motivation", "Please provide a motivation.");
                 return View();
             }
 
@@ -142,8 +142,14 @@ namespace EurovisionHub.Controllers
             _context.RoleRequests.Add(roleRequest);
             await _context.SaveChangesAsync();
 
-            TempData["success"] = "Заявку успішно надіслано!";
+            TempData["success"] = "Your request has been successfully submitted!";
             return RedirectToAction("Index", "Home");
+        }
+
+        [AllowAnonymous]
+        public IActionResult AccessDenied()
+        {
+            return View();
         }
     }
 }
