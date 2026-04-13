@@ -1,0 +1,31 @@
+﻿@model IEnumerable<EurovisionHub.Models.ViewModels.UserListViewModel>
+
+<div class="container mt-4">
+    <partial name="_AdminNav" />
+    <h2>User Management</h2>
+    <div class="table-responsive">
+    <table class="table glass-table">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Current Role</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Email</td>
+                    <td><span class="badge bg-info">@user.CurrentRole</span></td>
+                    <td>
+                        <a asp-action="EditRole" asp-route-userId="@user.Id" class="btn btn-glass-edit">
+                            Change Role & Notify
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    </div>
+</div>

@@ -40,7 +40,35 @@
                 @Html.DisplayFor(modelItem => item.Artist)
             </td>
             <td>
-                    <a href="@item.VideoUrl">@Html.DisplayFor(modelItem => item.VideoUrl)</a>
+                @if (!string.IsNullOrEmpty(item.VideoUrl))
+                        {
+                            string embedUrl = item.VideoUrl;
+                            
+                            if (item.VideoUrl.Contains("watch?v="))
+                            {
+                                embedUrl = item.VideoUrl.Replace("watch?v=", "embed/");
+                                int ampersandIndex = embedUrl.IndexOf('&');
+                                if (ampersandIndex > 0)
+                                {
+                                    embedUrl = embedUrl.Substring(0, ampersandIndex);
+                                }
+                            }
+                            else if (item.VideoUrl.Contains("youtu.be/"))
+                            {
+                                embedUrl = item.VideoUrl.Replace("youtu.be/", "www.youtube.com/embed/");
+                                int questionIndex = embedUrl.IndexOf('?');
+                                if (questionIndex > 0)
+                                {
+                                    embedUrl = embedUrl.Substring(0, questionIndex);
+                                }
+                            }
+
+                            <iframe width="250" height="140" src="@embedUrl" 
+                                    title="YouTube video player" frameborder="0" 
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen>
+                            </iframe>
+                        }
             </td>
             <td>
                 <div class="edit-menu">

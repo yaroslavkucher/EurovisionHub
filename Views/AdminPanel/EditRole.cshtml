@@ -1,0 +1,32 @@
+﻿@model EurovisionHub.Models.ViewModels.ChangeRoleViewModel
+<div class="container mt-4">
+    <partial name="_AdminNav" />
+    <div class="glass-card">
+        <div class="glass-card-header">
+            <h4 class="text-white">Change Role for @Model.UserEmail</h4>
+        </div>
+        <div class="glass-card-body">
+            <form method="post">
+                <input asp-for="UserId" hidden />
+                <div class="mb-3">
+                    <label asp-for="SelectedRole">New Role</label>
+                    <select asp-for="SelectedRole" asp-items="@(new SelectList(Model.AllRoles))" class="form-control"></select>
+                    
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Comment">Explanation for user</label>
+                    <textarea asp-for="Comment" class="form-control glass-input" style="height: 100px" placeholder="Explain why..."></textarea>
+                    
+                </div>
+                <div class="row pt-2 d-flex justify-content-center">
+                    <div class="col-6 col-md-3">
+                        <button type="submit" class="btn btn-primary form-control">Apply Changes</button>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a asp-action="Users" class="btn btn-outline-secondary border form-control">Back to List</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

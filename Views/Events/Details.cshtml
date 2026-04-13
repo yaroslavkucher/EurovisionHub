@@ -39,7 +39,7 @@
 <div>
     @if (User.IsAdmin())
     {
-        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn-glass-edit">Edit</a><p>|</p>
+        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn-glass-edit">Edit</a>
     }
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" class="btn-glass-submit">Back to List</a>
 </div>

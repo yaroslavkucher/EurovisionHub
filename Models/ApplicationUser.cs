@@ -6,5 +6,9 @@ namespace EurovisionHub.Models
     {
         public bool IsDeleted { get; set; } = false;
 
+        public string? RoleChangeComment { get; set; }
+
+        public bool ShowRoleChangeNotification { get; set; }
+
     }
 }

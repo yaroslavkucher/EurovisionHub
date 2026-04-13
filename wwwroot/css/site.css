@@ -324,7 +324,7 @@ edit-menu {
 }
 
     .form-control:focus {
-        background: rgba(255, 255, 255, 0.15) !important;
+        /*background: rgba(255, 255, 255, 0.15) !important;*/
         box-shadow: 0 0 10px rgba(255, 255, 255, 0.2) !important;
         border-color: rgba(255, 255, 255, 0.4) !important;
     }
@@ -345,6 +345,8 @@ edit-menu {
 
 select.form-control option {
     background-color: #656288 !important;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
     color: white !important;
     padding: 10px;
 }

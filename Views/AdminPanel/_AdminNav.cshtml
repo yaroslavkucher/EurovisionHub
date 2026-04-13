@@ -1,0 +1,12 @@
+﻿<div class="d-flex justify-content-center">
+    <ul class="nav nav-pills mb-4">
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Requests" ? "active" : "") text-white"
+               asp-action="Requests">Admin Applications <span class="badge bg-info">@ViewBag.PendingRequestsCount</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(ViewContext.RouteData.Values["action"]?.ToString() == "Users" || ViewContext.RouteData.Values["action"]?.ToString() == "EditRole" ? "active" : "") text-white"
+               asp-action="Users">User Permissions</a>
+        </li>
+    </ul>
+</div>

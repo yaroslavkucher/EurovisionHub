@@ -18,9 +18,9 @@ namespace EurovisionHub.Models
         [Required]
         public string UserId { get; set; }
 
-        [Required(ErrorMessage = "Будь ласка, напишіть, чому ви хочете стати адміністратором")]
-        [StringLength(500, ErrorMessage = "Мотивація не може перевищувати 500 символів")]
-        [Display(Name = "Мотивація")]
+        [Required(ErrorMessage = "Please write why you want to become an administrator.")]
+        [StringLength(500, ErrorMessage = "Motivation cannot exceed 500 characters.")]
+        [Display(Name = "Motivation")]
         public string Motivation { get; set; } = string.Empty;
 
         [ForeignKey("UserId")]

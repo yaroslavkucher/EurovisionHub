@@ -119,7 +119,7 @@ namespace EurovisionHub.Controllers
             var roleRequest = new RoleRequest
             {
                 UserId = userId,
-                RequestedRole = "Admin",
+                RequestedRole = User.IsInRole("User") ? "Admin" : "SuperAdmin",
                 Motivation = motivation,
                 CreatedAt = DateTime.UtcNow,
                 Status = RequestStatus.Pending
