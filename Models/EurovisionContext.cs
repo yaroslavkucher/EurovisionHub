@@ -29,6 +29,8 @@ public partial class EurovisionContext : IdentityDbContext<ApplicationUser>
 
     public virtual DbSet<RoleRequest> RoleRequests { get; set; }
 
+    public virtual DbSet<WinnerOpinion> WinnerOpinions { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

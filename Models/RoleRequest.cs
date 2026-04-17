@@ -18,6 +18,9 @@ namespace EurovisionHub.Models
         [Required]
         public string UserId { get; set; }
 
+        [NotMapped]
+        public string UserRole { get; set; }
+
         [Required(ErrorMessage = "Please write why you want to become an administrator.")]
         [StringLength(500, ErrorMessage = "Motivation cannot exceed 500 characters.")]
         [Display(Name = "Motivation")]

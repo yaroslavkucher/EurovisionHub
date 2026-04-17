@@ -22,7 +22,7 @@ namespace EurovisionHub.Controllers
         // GET: Events
         public async Task<IActionResult> Index()
         {
-            var eurovisionContext = _context.Events.Include(p => p.Type).Include(p => p.HostCountry);
+            var eurovisionContext = _context.Events.Include(p => p.Type).Include(p => p.HostCountry).OrderByDescending(e => e.Date);
             return View(await eurovisionContext.ToListAsync());
         }
 

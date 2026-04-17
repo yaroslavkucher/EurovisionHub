@@ -24,7 +24,9 @@
                 <thead>
                     <tr>
                         <th>User (Email)</th>
+                        <th>User Role</th>
                         <th style="width: 40%;">Motivation</th>
+                        <th>Requested Role</th>
                         <th>Submission date</th>
                         <th></th>
                     </tr>
@@ -37,9 +39,15 @@
                                 <strong>@item.User.Email</strong>
                             </td>
                             <td>
+                                <span class="badge bg-info">@item.UserRole</span>
+                            </td>
+                            <td>
                                 <div class="" style="max-height: 60px; overflow-y: auto; font-size: 0.9rem;">
                                     @item.Motivation
                                 </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-warning">@item.RequestedRole</span>
                             </td>
                             <td>
                                 @item.CreatedAt.ToString("dd.MM.yyyy HH:mm")

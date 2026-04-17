@@ -9,11 +9,24 @@
 
 <div class="glass-container">
     <div class="glass-section">
-        <h3>Статистика Перемог</h3>
-        <div style="width: 100%; height: 350px;">
-            <canvas id="myChart"></canvas>
+        <div class="col-md-6 text-center">
+            <h4 class="mb-4">Agree / Disagree with the winner of @ViewBag.EventName</h4>
+            @Html.AntiForgeryToken()
+
+            <div id="voteSection" style="@(ViewBag.HasVoted ? "display:none" : "")">
+                <p class="mt-3">Please cast your vote to see the results.</p>
+                <div class="mt-4">
+                    <button onclick="submitVote(true)" class="btn btn-success me-3 px-4">Agree</button>
+                    <button onclick="submitVote(false)" class="btn btn-danger px-4">Disagree</button>
+                </div>
+            </div>
+            
+            <div id="chartSection" style="@(ViewBag.HasVoted ? "" : "display:none")">
+                <div style="position: relative; height: 300px; width: 100%; display: flex; justify-content: center;">
+                    <canvas id="winnerOpinionChart"></canvas>
+                </div>
+            </div>
         </div>
-        <p class="mt-2 text-white-50 small">Діаграма відображає країни з найбільшою кількістю перемог в історії.</p>
     </div>
 
     <div class="divider d-none d-lg-block"></div>
@@ -27,6 +40,21 @@
             <div class="time-unit"><span id="seconds">00</span><span class="time-label">Sec</span></div>
         </div>
         <p class="mt-4 small text-white-50">Фінал Євробачення 2026 відбудеться у травні</p>
+    </div>
+</div>
+
+
+<div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content" style="background: rgba(30, 30, 40, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; color: white;">
+            <div class="modal-body text-center p-4">
+                <h5 class="mb-4">Please login to vote!</h5>
+                <div class="d-flex justify-content-center gap-2">
+                    <a asp-controller="Account" asp-action="Login" class="btn btn-primary px-4">Login</a>
+                    <button type="button" class="btn btn-outline-light px-4" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -55,44 +83,155 @@
                 document.getElementById("countdown").innerHTML = "ШОУ РОЗПОЧАТО!";
             }
         }, 1000);
-
-        const ctx = document.getElementById('myChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: ['Журі', 'Глядачі'],
-                datasets: [{
-                    label: 'Розподіл балів',
-                    data: [@ViewBag.JuryPoints, @ViewBag.TelePoints],
-                    backgroundColor: [
-                        'rgba(101, 98, 136, 0.6)',
-                        'rgba(255, 255, 255, 0.2)'
-                    ],
-                    borderColor: [
-                        '#656288',
-                        'rgba(255, 255, 255, 0.5)'
-                    ],
-                    borderWidth: 2,
-                    hoverOffset: 15
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { color: 'white', padding: 20, font: { size: 14 } }
-                    },
-                    title: {
-                        display: true,
-                        text: 'Журі vs Глядачі (Загальні бали)',
-                        color: 'white',
-                        font: { size: 18, weight: 'bold' }
-                    }
-                },
-                cutout: '70%'
-            }
-        });
     </script>
-}
+
+    <!--<script>
+        let myChart = null;
+
+        const isAuthenticated = @(User.Identity != null && User.Identity.IsAuthenticated ? "true" : "false");
+        const eventId = '@(ViewBag.EventId ?? 0)';
+
+        function initChart(agree, disagree) {
+        const ctx = document.getElementById('winnerOpinionChart').getContext('2d');
+        myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+        labels: ['Agree', 'Disagree'],
+        datasets: [{
+        data: [agree, disagree],
+        backgroundColor: ['rgba(40, 167, 69, 0.8)', 'rgba(220, 53, 69, 0.8)'],
+        borderWidth: 1
+        }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+        legend: { position: 'bottom', labels: { color: 'white', font: { size: 14 } } }
+        }
+        }
+        });
+        }
+
+        @if (ViewBag.HasVoted == true)
+        {
+            <text>initChart(@(ViewBag.AgreeCount ?? 0), @(ViewBag.DisagreeCount ?? 0));</text>
+        }
+
+        async function submitVote(isAgree) {
+        if (!isAuthenticated) {
+        var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+        loginModal.show();
+        return;
+        }
+            
+        try {
+        const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+        const token = tokenInput ? tokenInput.value : '';
+
+        const response = await fetch(`/Home/Vote?eventId=${eventId}&agree=${isAgree}`, {
+        method: 'POST',
+        headers: {
+        'RequestVerificationToken': token,
+        'Accept': 'application/json'
+        }
+        });
+
+        if (response.ok) {
+        const data = await response.json();
+                    
+        document.getElementById('voteSection').style.display = 'none';
+        document.getElementById('chartSection').style.display = 'block';
+                    
+        initChart(data.item1, data.item2);
+        } else {
+        const errorText = await response.text();
+        console.error("Server validation failed:", errorText);
+        }
+        } catch (error) {
+        console.error("Error submitting vote:", error);
+        }
+        }
+    </script>-->
+
+    <script>
+        let myChart = null;
+
+        const isAuthenticated = @(User.Identity?.IsAuthenticated == true ? "true" : "false");
+        const eventId = '@(ViewBag.EventId ?? 0)';
+
+        function initChart(agree, disagree) {
+        const canvas = document.getElementById('winnerOpinionChart');
+        if (!canvas) return;
+
+        if (myChart !== null) {
+        myChart.destroy();
+        }
+
+        const ctx = canvas.getContext('2d');
+        myChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+        labels: ['Agree', 'Disagree'],
+        datasets: [{
+        data: [agree, disagree],
+        backgroundColor: ['rgba(40, 167, 69, 0.8)', 'rgba(220, 53, 69, 0.8)'],
+        borderWidth: 1
+        }]
+        },
+        options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+        legend: { position: 'bottom', labels: { color: 'white', font: { size: 14 } } }
+        }
+        }
+        });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+        @if (ViewBag.HasVoted == true)
+        {
+            <text>initChart(@(ViewBag.AgreeCount ?? 0), @(ViewBag.DisagreeCount ?? 0));</text>
+        }
+        });
+
+        async function submitVote(isAgree) {
+        if (!isAuthenticated) {
+        var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
+        loginModal.show();
+        return;
+        }
+                
+        try {
+        const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
+        const token = tokenInput ? tokenInput.value : '';
+
+        const response = await fetch(`/Home/Vote?eventId=${eventId}&agree=${isAgree}`, {
+        method: 'POST',
+        headers: {
+        'RequestVerificationToken': token,
+        'Accept': 'application/json'
+        }
+        });
+
+        if (response.ok) {
+        const data = await response.json();
+                        
+        document.getElementById('voteSection').style.display = 'none';
+        document.getElementById('chartSection').style.display = 'block';
+                        
+        initChart(data.agree, data.disagree);
+        } else if (response.status === 401) {
+        var modal = new bootstrap.Modal(document.getElementById('loginModal'));
+        modal.show();
+        } else {
+        const errorText = await response.text();
+        console.error("Server validation failed:", errorText);
+        }
+        } catch (error) {
+        console.error("Error submitting vote:", error);
+        }
+        }
+    </script>
+    }

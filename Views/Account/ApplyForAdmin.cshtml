@@ -1,5 +1,19 @@
 ﻿@{
     ViewData["Title"] = "Apply for Admin";
+    string head = "Apply", description = "Discribe your motivation:", placeholder = "Your motivation...";
+
+    @if (User.IsInRole("User"))
+    {
+        head = "Apply for the role of Administrator";
+        description = "Describe why you want to join the EurovisionHub moderation team:";
+        placeholder = "For example: I want to add new songs and results from previous years...";
+    }
+    else if (User.IsInRole("Admin"))
+    {
+        head = "Apply for the role of SuperAdmin";
+        description = "Describe why you want to expand your permissions:";
+        placeholder = "For example: I have been working for 5 years. I have a strong desire to develop...";
+    }
 }
 
 <div class="container mt-5">
@@ -7,10 +21,10 @@
         <div class="col-md-6">
             <div class="glass-card">
                 <div class="glass-card-header">
-                    <h4>Apply for the role of Administrator</h4>
+                    <h4>@head</h4>
                 </div>
                 <div class="glass-card-body">
-                    <p>Describe why you want to join the EurovisionHub moderation team:</p>
+                    <p>@description</p>
                     
                     <form asp-action="ApplyForAdmin" method="post">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -18,7 +32,7 @@
                         <div class="mb-3">
                             <label for="motivation" class="form-label">Your motivation</label>
                             <textarea id="motivation" name="motivation" class="form-control glass-input" rows="5" required
-                                      placeholder="For example: I want to add new songs and results from previous years..."></textarea>
+                                      placeholder="@placeholder"></textarea>
                             <span class="text-danger"></span>
                         </div>
 

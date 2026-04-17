@@ -29,6 +29,12 @@ public class AdminPanelController : Controller
             .OrderByDescending(r => r.CreatedAt)
             .ToListAsync();
 
+        foreach (var request in requests)
+        {
+            var roles = await _userManager.GetRolesAsync(request.User);
+            request.UserRole = roles.FirstOrDefault() ?? "No Role";
+        }
+
         ViewBag.PendingRequestsCount = _context.RoleRequests.Count(r => r.Status == RequestStatus.Pending);
 
         return View(requests);
