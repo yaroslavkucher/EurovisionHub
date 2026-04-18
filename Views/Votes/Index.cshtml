@@ -46,53 +46,71 @@ else
 </div>
 </div>
 
-<div class="table-responsive">
-<table class="table glass-table">
-    <thead>
-        <tr>
-            <th>FromCountry</th>
-            <th>ToCountry</th>
-            <th>Jury/Televote</th>
-            <th>Points</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model.Votes)
-        {
-            <tr>
-                <td>@item.FromCountry?.Name</td>
-                <td>@item.ToParticipation?.Country.Name</td>
-                <td>
-                    @(item.IsJury ? "Jury" : "Televote")
-                </td>
-                <td>@item.Points</td>
-                <td>
-                    <div class="edit-menu">
-                        @if (User.IsAdmin())
-                            {
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none">
-                                    <img src="~/img/edit.png" alt="Edit" style="width:20px; height:20px;" />
+@if (!(Model.Votes?.Any() ?? false))
+{
+    @if (User.IsAdmin())
+    {
+        <div class="alert alert-info">
+            There are no votes here. Add a new vote!
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            There are no votes here. Updates coming soon.
+        </div>
+    }
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table glass-table">
+            <thead>
+                <tr>
+                    <th>FromCountry</th>
+                    <th>ToCountry</th>
+                    <th>Jury/Televote</th>
+                    <th>Points</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Votes)
+                {
+                    <tr>
+                        <td>@item.FromCountry?.Name</td>
+                        <td>@item.ToParticipation?.Country.Name</td>
+                        <td>
+                            @(item.IsJury ? "Jury" : "Televote")
+                        </td>
+                        <td>@item.Points</td>
+                        <td>
+                            <div class="edit-menu">
+                                @if (User.IsAdmin())
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="text-decoration-none">
+                                        <img src="~/img/edit.png" alt="Edit" style="width:20px; height:20px;" />
+                                    </a>
+                                    <span>|</span>
+                                }
+                                <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
+                                    <img src="~/img/info.png" alt="Details" style="width:23px; height:23px;" />
                                 </a>
-                                <span>|</span>
-                            }
-                            <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none">
-                                <img src="~/img/info.png" alt="Details" style="width:23px; height:23px;" />
-                            </a>
-                        @if (User.IsAdmin())
-                            {
-                                <span>|</span>
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none">
-                                    <img src="~/img/delete.png" alt="Delete" style="width:20px; height:20px;" />
-                                </a>
-                            }
-                    </div>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
-</div>
+                                @if (User.IsAdmin())
+                                {
+                                    <span>|</span>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="text-decoration-none">
+                                        <img src="~/img/delete.png" alt="Delete" style="width:20px; height:20px;" />
+                                    </a>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
 
 <div class="modal fade" id="eventSelectionModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog">

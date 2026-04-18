@@ -417,7 +417,7 @@ namespace EurovisionHub.Controllers
         {
             if (importFile == null || importFile.Length == 0)
             {
-                return RedirectToAction(nameof(Index)); // Add a message about empty file!
+                return RedirectToAction(nameof(Index));
             }
 
             var errorLog = new StringBuilder();
@@ -433,6 +433,8 @@ namespace EurovisionHub.Controllers
                         var worksheet = workbook.Worksheet(1);
                         var rows = worksheet.RangeUsed().RowsUsed().Skip(1);
 
+                        var votesInCurrentImport = new List<Vote>();
+
                         foreach (var row in rows)
                         {
                             int rowNum = row.RowNumber();
@@ -443,6 +445,9 @@ namespace EurovisionHub.Controllers
                                 string toCountryName = row.Cell(3).GetString().Trim();
                                 string pointsStr = row.Cell(4).GetString().Trim();
                                 string isJuryStr = row.Cell(5).GetString().Trim();
+
+                                if (eventName == "" || fromCountryName == "" || toCountryName == "" || pointsStr == "" || isJuryStr == "")
+                                    throw new InvalidCastException("There is not enough information in this line to add a vote.");
 
                                 var ev = await _context.Events.FirstOrDefaultAsync(e => e.Name == eventName);
                                 if (ev == null) { errorLog.AppendLine($"Row {rowNum}: Event '{eventName}' not found in database."); continue; }
@@ -467,20 +472,26 @@ namespace EurovisionHub.Controllers
                                               isJuryStr.Equals("Jury", StringComparison.OrdinalIgnoreCase) ||
                                               isJuryStr == "1";
 
-                                var existingVote = await _context.Votes.AnyAsync(v =>
-                                    v.FromCountryId == fromCountry.Id &&
-                                    v.ToParticipationId == participation.Id &&
-                                    v.IsJury == isJury &&
-                                    v.EventId == ev.Id);
+                                var existingVoteDb = await _context.Votes.AnyAsync(v =>
+                                                                    v.FromCountryId == fromCountry.Id && v.ToParticipationId == participation.Id && v.IsJury == isJury && v.EventId == ev.Id);
+                                var existingVoteLocal = votesInCurrentImport.Any(v =>
+                                                                    v.FromCountryId == fromCountry.Id && v.ToParticipationId == participation.Id && v.IsJury == isJury && v.EventId == ev.Id);
 
-                                var isDuplicatePoints = await _context.Votes.AnyAsync(v =>
-                                    v.FromCountryId == fromCountry.Id &&
-                                    v.Points == points &&
-                                    v.IsJury == isJury &&
-                                    v.EventId == ev.Id);
+                                var isDuplicatePointsDb = await _context.Votes.AnyAsync(v =>
+                                                                    v.FromCountryId == fromCountry.Id && v.Points == points && v.IsJury == isJury && v.EventId == ev.Id);
+                                var isDuplicatePointsLocal = votesInCurrentImport.Any(v =>
+                                                                    v.FromCountryId == fromCountry.Id && v.Points == points && v.IsJury == isJury && v.EventId == ev.Id);
 
-                                if (existingVote) { errorLog.AppendLine($"Row {rowNum}: Vote from {fromCountryName} to {toCountryName} already exists."); continue; }
-                                if (isDuplicatePoints) { errorLog.AppendLine($"Row {rowNum}: {fromCountryName} already gave {points} points in this category."); continue; }
+                                if (existingVoteDb || existingVoteLocal)
+                                {
+                                    errorLog.AppendLine($"Row {rowNum}: Vote from {fromCountryName} to {toCountryName} already exists.");
+                                    continue;
+                                }
+                                if (isDuplicatePointsDb || isDuplicatePointsLocal)
+                                {
+                                    errorLog.AppendLine($"Row {rowNum}: {fromCountryName} already gave {points} points in this category.");
+                                    continue;
+                                }
 
                                 var vote = new Vote
                                 {
@@ -490,6 +501,7 @@ namespace EurovisionHub.Controllers
                                     Points = points,
                                     IsJury = isJury
                                 };
+                                votesInCurrentImport.Add(vote);
                                 _context.Votes.Add(vote);
                                 addedCount++;
                             }

@@ -40,34 +40,36 @@
                 @Html.DisplayFor(modelItem => item.Artist)
             </td>
             <td>
-                @if (!string.IsNullOrEmpty(item.VideoUrl))
+                        @if (!string.IsNullOrEmpty(item.VideoUrl))
                         {
-                            string embedUrl = item.VideoUrl;
-                            
+                            string videoId = "";
+
                             if (item.VideoUrl.Contains("watch?v="))
                             {
-                                embedUrl = item.VideoUrl.Replace("watch?v=", "embed/");
-                                int ampersandIndex = embedUrl.IndexOf('&');
-                                if (ampersandIndex > 0)
-                                {
-                                    embedUrl = embedUrl.Substring(0, ampersandIndex);
-                                }
+                                int startIndex = item.VideoUrl.IndexOf("watch?v=") + 8;
+                                int endIndex = item.VideoUrl.IndexOf('&', startIndex);
+                                videoId = endIndex > 0
+                                    ? item.VideoUrl.Substring(startIndex, endIndex - startIndex)
+                                    : item.VideoUrl.Substring(startIndex);
                             }
                             else if (item.VideoUrl.Contains("youtu.be/"))
                             {
-                                embedUrl = item.VideoUrl.Replace("youtu.be/", "www.youtube.com/embed/");
-                                int questionIndex = embedUrl.IndexOf('?');
-                                if (questionIndex > 0)
-                                {
-                                    embedUrl = embedUrl.Substring(0, questionIndex);
-                                }
+                                int startIndex = item.VideoUrl.IndexOf("youtu.be/") + 9;
+                                int endIndex = item.VideoUrl.IndexOf('?', startIndex);
+                                videoId = endIndex > 0
+                                    ? item.VideoUrl.Substring(startIndex, endIndex - startIndex)
+                                    : item.VideoUrl.Substring(startIndex);
                             }
 
-                            <iframe width="250" height="140" src="@embedUrl" 
-                                    title="YouTube video player" frameborder="0" 
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                    allowfullscreen>
-                            </iframe>
+                            if (!string.IsNullOrEmpty(videoId))
+                            {
+
+                                <div class="youtube-facade" data-video-id="@videoId" style="width: 250px; height: 140px;">
+                                    <img src="https://img.youtube.com/vi/@videoId/hqdefault.jpg" alt="Прев'ю відео" />
+            
+                                    <div class="play-button"></div>
+                                </div>
+                            }
                         }
             </td>
             <td>
@@ -96,3 +98,31 @@
     </tbody>
 </table>
 </div>
+
+@section Scripts {
+    <script>
+                document.addEventListener("DOMContentLoaded", function() {
+            const videoFacades = document.querySelectorAll('.youtube-facade');
+
+            videoFacades.forEach(facade => {
+                facade.addEventListener('click', function() {
+                    const videoId = this.getAttribute('data-video-id');
+                    const origin = window.location.origin;
+
+                    const iframe = document.createElement('iframe');
+                    iframe.setAttribute('width', '100%');
+                    iframe.setAttribute('height', '100%');
+                    iframe.setAttribute('frameborder', '0');
+                    iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+                    iframe.setAttribute('allowfullscreen', 'true');
+                    iframe.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+            
+                    iframe.setAttribute('src', `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&origin=${origin}`);
+
+                    this.innerHTML = '';
+                    this.appendChild(iframe);
+                });
+            });
+        });
+    </script>
+}

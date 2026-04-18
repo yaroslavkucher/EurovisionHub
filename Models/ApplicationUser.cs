@@ -10,5 +10,7 @@ namespace EurovisionHub.Models
 
         public bool ShowRoleChangeNotification { get; set; }
 
+        public DateTime RegistrationDate { get; set; } = DateTime.UtcNow;
+
     }
 }

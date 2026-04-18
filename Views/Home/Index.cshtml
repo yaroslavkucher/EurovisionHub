@@ -39,7 +39,7 @@
             <div class="time-unit"><span id="minutes">00</span><span class="time-label">Min</span></div>
             <div class="time-unit"><span id="seconds">00</span><span class="time-label">Sec</span></div>
         </div>
-        <p class="mt-4 small text-white-50">Фінал Євробачення 2026 відбудеться у травні</p>
+        <p class="mt-4 small text-white-50">Eurovision Song Contest 2026 Final to take place in May</p>
     </div>
 </div>
 
@@ -80,79 +80,10 @@
 
             if (distance < 0) {
                 clearInterval(x);
-                document.getElementById("countdown").innerHTML = "ШОУ РОЗПОЧАТО!";
+                document.getElementById("countdown").innerHTML = "THE SHOW HAS STARTED!";
             }
         }, 1000);
     </script>
-
-    <!--<script>
-        let myChart = null;
-
-        const isAuthenticated = @(User.Identity != null && User.Identity.IsAuthenticated ? "true" : "false");
-        const eventId = '@(ViewBag.EventId ?? 0)';
-
-        function initChart(agree, disagree) {
-        const ctx = document.getElementById('winnerOpinionChart').getContext('2d');
-        myChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-        labels: ['Agree', 'Disagree'],
-        datasets: [{
-        data: [agree, disagree],
-        backgroundColor: ['rgba(40, 167, 69, 0.8)', 'rgba(220, 53, 69, 0.8)'],
-        borderWidth: 1
-        }]
-        },
-        options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-        legend: { position: 'bottom', labels: { color: 'white', font: { size: 14 } } }
-        }
-        }
-        });
-        }
-
-        @if (ViewBag.HasVoted == true)
-        {
-            <text>initChart(@(ViewBag.AgreeCount ?? 0), @(ViewBag.DisagreeCount ?? 0));</text>
-        }
-
-        async function submitVote(isAgree) {
-        if (!isAuthenticated) {
-        var loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
-        loginModal.show();
-        return;
-        }
-            
-        try {
-        const tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
-        const token = tokenInput ? tokenInput.value : '';
-
-        const response = await fetch(`/Home/Vote?eventId=${eventId}&agree=${isAgree}`, {
-        method: 'POST',
-        headers: {
-        'RequestVerificationToken': token,
-        'Accept': 'application/json'
-        }
-        });
-
-        if (response.ok) {
-        const data = await response.json();
-                    
-        document.getElementById('voteSection').style.display = 'none';
-        document.getElementById('chartSection').style.display = 'block';
-                    
-        initChart(data.item1, data.item2);
-        } else {
-        const errorText = await response.text();
-        console.error("Server validation failed:", errorText);
-        }
-        } catch (error) {
-        console.error("Error submitting vote:", error);
-        }
-        }
-    </script>-->
 
     <script>
         let myChart = null;
