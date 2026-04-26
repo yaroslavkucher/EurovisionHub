@@ -23,7 +23,12 @@ namespace EurovisionHub.Controllers
         .OrderByDescending(e => e.Date)
         .FirstOrDefaultAsync();
 
-            if (latestFinal == null) return View();
+            if (latestFinal == null)
+            {
+                ViewBag.HasVoted = false;
+                ViewBag.EventName = "Future Events";
+                return View();
+            }
 
             ViewBag.EventId = latestFinal.Id;
             ViewBag.EventName = latestFinal.Name;
