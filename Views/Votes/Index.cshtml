@@ -155,8 +155,18 @@ else
                     </div>
                     <hr />
                     <div class="mb-3">
-                        <p>2. Upload the completed Excel file.</p>
-                        <label for="importFile" class="form-label">Select .xlsx file</label>
+                        <p class="mb-2">2. Upload the completed Excel file.</p>
+    
+                        <div class="mb-1">
+                            <span class="text-secondary"
+                                  style="cursor: help; border: 1px solid currentcolor; border-radius: 50%; display: inline-flex; width: 18px; height: 18px; justify-content: center; align-items: center; font-size: 0.75em; font-weight: bold;"
+                                  data-bs-toggle="tooltip"
+                                  data-bs-placement="top"
+                                  title="You can only import votes from existing events and participations.">
+                                ?
+                            </span>
+                        </div>
+
                         <input class="form-control" type="file" id="importFile" name="importFile" accept=".xlsx" required>
                     </div>
                 </div>

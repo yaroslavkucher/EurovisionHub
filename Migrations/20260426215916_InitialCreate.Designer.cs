@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EurovisionHub.Migrations
 {
     [DbContext(typeof(EurovisionContext))]
-    [Migration("20260413004506_AddWinnerOpinions")]
-    partial class AddWinnerOpinions
+    [Migration("20260426215916_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,6 +69,9 @@ namespace EurovisionHub.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("RoleChangeComment")
                         .HasColumnType("text");
